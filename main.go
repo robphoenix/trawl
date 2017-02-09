@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"io/ioutil"
 	"log"
@@ -11,11 +12,33 @@ import (
 )
 
 func main() {
+
+	flag.Parse()
+
+	interfacesWant := flag.Args()
+
 	ifaces, err := net.Interfaces()
 	if err != nil {
 		log.Fatal(err)
 	}
-	for _, iface := range ifaces {
+
+	var requestedIfaces []net.Interface
+
+	if len(interfacesWant) > 0 {
+		for _, ifw := range interfacesWant {
+			validIface, err := validIface(ifw, ifaces)
+			if err != nil {
+				log.Fatal(err)
+			}
+			requestedIfaces = append(requestedIfaces, validIface)
+		}
+	}
+
+	if len(interfacesWant) == 0 {
+		requestedIfaces = ifaces
+	}
+
+	for _, iface := range requestedIfaces {
 		addrs, err := iface.Addrs()
 		if err != nil {
 			log.Fatal(err)
@@ -35,8 +58,8 @@ func main() {
 		}
 
 		fmt.Printf("\tIPv4 address:\t%s\n", ip)
-		fmt.Printf("\tIPv4 network:\t%s\n", ipnet)
 		fmt.Printf("\tIPv4 mask:\t%s\n", ipv4Mask)
+		fmt.Printf("\tIPv4 network:\t%s\n", ipnet)
 		if len(addrs) > 1 {
 			fmt.Printf("\tIPv6 address:\t%s\n", addrs[1])
 		}
@@ -85,4 +108,13 @@ func toDottedDec(cidr string) (string, error) {
 
 	dottedDec := strings.Join(mask, ".")
 	return dottedDec, nil
+}
+
+func validIface(iface string, got []net.Interface) (ifg net.Interface, err error) {
+	for _, ifg := range got {
+		if iface == ifg.Name {
+			return ifg, nil
+		}
+	}
+	return ifg, fmt.Errorf("sorry, interface [%s] is not available", iface)
 }
