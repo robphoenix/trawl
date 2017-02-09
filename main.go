@@ -34,34 +34,9 @@ func main() {
 	}
 
 	for _, iface := range ifaces {
-		addrs, err := iface.Addrs()
-		if err != nil {
-			log.Fatal(err)
-		}
-		fmt.Printf("%s\n", iface.Name)
-
-		ipv4 := addrs[0].String()
-
-		ipv4Mask := strings.Split(ipv4, "/")[1]
-		ipv4Mask, err = toDottedDec(ipv4Mask)
-		if err != nil {
-			log.Fatal(err)
-		}
-		ip, ipnet, err := net.ParseCIDR(addrs[0].String())
-		if err != nil {
-			log.Fatal(err)
-		}
-
-		fmt.Printf("\tIPv4 address:\t%s\n", ip)
-		fmt.Printf("\tIPv4 mask:\t%s\n", ipv4Mask)
-		fmt.Printf("\tIPv4 network:\t%s\n", ipnet)
-		if len(addrs) > 1 {
-			fmt.Printf("\tIPv6 address:\t%s\n", addrs[1])
-		}
-		fmt.Printf("\tMTU:\t\t%d\n", iface.MTU)
-		if string(iface.HardwareAddr) != "" {
-			fmt.Printf("\tMAC Address:\t%s\n", iface.HardwareAddr)
-		}
+		i := New(iface)
+		// TODO print only if not empty
+		fmt.Println(i.String())
 	}
 	resp, err := http.Get("https://api.ipify.org/")
 	if err != nil {
@@ -70,7 +45,6 @@ func main() {
 	defer resp.Body.Close()
 	body, _ := ioutil.ReadAll(resp.Body)
 	fmt.Printf("\nExternal IP:\t%s\n", string(body))
-
 }
 
 func toDottedDec(cidr string) (s string, err error) {
@@ -175,4 +149,25 @@ func New(iface net.Interface) *Interface {
 		MTU:         iface.MTU,
 		MACAddress:  iface.HardwareAddr.String(),
 	}
+}
+
+func (iface *Interface) String() string {
+	ifaceString := `Interface %s
+IPv4 address:	%s
+IPv4 mask:	%s
+IPv4 network:	%s
+IPv6 address:	%s
+MTU:		%d
+MAC Address:	%s
+`
+	return fmt.Sprintf(
+		ifaceString,
+		iface.Name,
+		iface.IPv4Address,
+		iface.IPv4Mask,
+		iface.IPv4Network,
+		iface.IPv6Address,
+		iface.MTU,
+		iface.MACAddress,
+	)
 }
