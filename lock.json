@@ -1,0 +1,21 @@
+{
+    "memo": "1d43eb15ba835c12cda2195525829e0bbbfe0fda6822f761e509026d9a3252f6",
+    "projects": [
+        {
+            "name": "github.com/jpillora/backoff",
+            "branch": "master",
+            "revision": "06c7a16c845dc8e0bf575fafeeca0f5462f5eb4d",
+            "packages": [
+                "."
+            ]
+        },
+        {
+            "name": "github.com/rdegges/go-ipify",
+            "branch": "master",
+            "revision": "2d94a6a86c4055118cc30fae2aaed47ec01f2210",
+            "packages": [
+                "."
+            ]
+        }
+    ]
+}
