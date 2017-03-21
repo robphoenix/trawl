@@ -24,19 +24,26 @@ func New(iface net.Interface) (i *Interface, err error) {
 		return i, err
 	}
 
+
 	// we can't rely on the order of the addresses in the addrs array
 	ipv4, ipv6 := extractAddrs(addrs)
 
 	// get IPv4 address & dotted decimal mask
-	ipv4Split := strings.Split(ipv4, "/")
-	ipv4Address := ipv4Split[0]
-	ipv4Cidr := ipv4Split[1]
-	ipv4Mask, err := toDottedDec(ipv4Cidr)
-	if err != nil {
-		return i, err
+	if len(ipv4) == 0 {
+	return &Interface{
+		Name:        iface.Name,
+		IPv6Address: ipv6,
+	}, nil
 	}
+		ipv4Split := strings.Split(ipv4, "/")
+		ipv4Address := ipv4Split[0]
+		ipv4Cidr := ipv4Split[1]
+		ipv4Mask, err := toDottedDec(ipv4Cidr)
+		if err != nil {
+			return i, err
+		}
 
-	// get IPv4 network
+<	// get IPv4 network
 	_, ipnet, err := net.ParseCIDR(ipv4)
 	if err != nil {
 		return i, err
