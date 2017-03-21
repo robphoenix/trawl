@@ -78,12 +78,13 @@ func New(iface net.Interface) (i *Interface, err error) {
 		return i, err
 	}
 
-	// get IPv4 address
-	ipv4 := addrs[0].String()
+	// linux & windows return ipv4 & ipv6 addresses in a different order
+	// so we can't rely on which will be where in the addrs array
+	ipv4, ipv6 := extractAddrs(addrs)
+
+	// get IPv4 address & dotted decimal mask
 	ipv4Split := strings.Split(ipv4, "/")
 	ipv4Address := ipv4Split[0]
-
-	// get IPv4 mask and convert to dotted decimal
 	ipv4Cidr := ipv4Split[1]
 	ipv4Mask, err := toDottedDec(ipv4Cidr)
 	if err != nil {
@@ -96,19 +97,25 @@ func New(iface net.Interface) (i *Interface, err error) {
 		return i, err
 	}
 
-	// get IPv6 address & mask
-	var ipv6Address string
-	if len(addrs) > 1 {
-		ipv6Address = addrs[1].String()
-	}
-
 	return &Interface{
 		Name:        iface.Name,
 		IPv4Address: ipv4Address,
 		IPv4Mask:    ipv4Mask,
 		IPv4Network: ipnet.String(),
-		IPv6Address: ipv6Address,
+		IPv6Address: ipv6,
 	}, nil
+}
+
+func extractAddrs(addrs []net.Addr) (ipv4 string, ipv6 string) {
+	for _, addr := range addrs {
+		if a := addr.String(); strings.Contains(a, ":") {
+			ipv6 = a
+		}
+		if a := addr.String(); strings.Contains(a, ".") {
+			ipv4 = a
+		}
+	}
+	return
 }
 
 func (iface *Interface) String() string {
