@@ -20,18 +20,21 @@ type Interface struct {
 }
 
 func main() {
+	c := make(chan *Interface)
 	ifaces, err := net.Interfaces()
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	fmt.Printf("\n")
 	for _, iface := range ifaces {
-		i, err := New(iface)
-		if err != nil {
-			log.Fatal(err)
-		}
-		fmt.Println(i.String())
+		go func(iface net.Interface) {
+			i, err := New(iface)
+			if err != nil {
+				log.Fatal(err)
+			}
+			c <- i
+			// fmt.Println(i.String())
+		}(iface)
 	}
 
 	// public IP address
@@ -39,6 +42,13 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
+
+	fmt.Printf("\n")
+	for range ifaces {
+		iface := <-c
+		fmt.Println(iface.String())
+	}
+
 	fmt.Printf("public      %s\n", string(pubIP))
 }
 
