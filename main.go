@@ -15,10 +15,7 @@ type Interface struct {
 	Name        string
 	IPv4Address string
 	IPv4Mask    string
-	IPv4Network string
 	IPv6Address string
-	MACAddress  string
-	MTU         int
 }
 
 type ExternalIP string
@@ -26,25 +23,54 @@ type ExternalIP string
 func main() {
 
 	flag.Parse()
-	wantIfaces := flag.Args()
-
-	ifaces, err := getIfaces(wantIfaces)
+	ifaces, err := net.Interfaces()
 	if err != nil {
 		log.Fatal(err)
 	}
-
+	fmt.Printf("\n")
 	for _, iface := range ifaces {
-		i := New(iface)
-		// TODO print only if not empty
-		fmt.Println(i.String())
+		addrs, err := iface.Addrs()
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		ipv4 := addrs[0].String()
+
+		ipv4Cidr := strings.Split(ipv4, "/")[1]
+		ipv4Mask, err := toDottedDec(ipv4Cidr)
+		if err != nil {
+			log.Fatal(err)
+		}
+		ip, ipnet, err := net.ParseCIDR(addrs[0].String())
+		if err != nil {
+			log.Fatal(err)
+		}
+		var ipv6Address string
+		if len(addrs) > 1 {
+			ipv6Address = addrs[1].String()
+		}
+		fmt.Printf("%-10s  %-15s  %-15s  %-18s %s\n", iface.Name, ip.String(), ipv4Mask, ipnet, ipv6Address)
 	}
+
+	// ifaces, err := getIfaces(wantIfaces)
+	// if err != nil {
+	// 	log.Fatal(err)
+	// }
+
+	// for _, iface := range ifaces {
+	// 	i := New(iface)
+	// 	// TODO print only if not empty
+	// 	fmt.Println(i.String())
+	// }
+
+	// public
 	resp, err := http.Get("https://api.ipify.org/")
 	if err != nil {
 		log.Fatal(err)
 	}
 	defer resp.Body.Close()
 	body, _ := ioutil.ReadAll(resp.Body)
-	fmt.Printf("\nExternal IP:\t%s\n", string(body))
+	fmt.Printf("public      %s\n", string(body))
 }
 
 func toDottedDec(cidr string) (s string, err error) {
@@ -134,6 +160,7 @@ func New(iface net.Interface) *Interface {
 	if err != nil {
 		log.Fatal(err)
 	}
+	fmt.Println(ipnet)
 
 	var ipv6Address string
 	if len(addrs) > 1 {
@@ -144,10 +171,7 @@ func New(iface net.Interface) *Interface {
 		Name:        iface.Name,
 		IPv4Address: ip.String(),
 		IPv4Mask:    ipv4Mask,
-		IPv4Network: ipnet.String(),
 		IPv6Address: ipv6Address,
-		MTU:         iface.MTU,
-		MACAddress:  iface.HardwareAddr.String(),
 	}
 }
 
@@ -155,19 +179,13 @@ func (iface *Interface) String() string {
 	ifaceString := `Interface %s
 IPv4 address:	%s
 IPv4 mask:	%s
-IPv4 network:	%s
 IPv6 address:	%s
-MTU:		%d
-MAC Address:	%s
 `
 	return fmt.Sprintf(
 		ifaceString,
 		iface.Name,
 		iface.IPv4Address,
 		iface.IPv4Mask,
-		iface.IPv4Network,
 		iface.IPv6Address,
-		iface.MTU,
-		iface.MACAddress,
 	)
 }
