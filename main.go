@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"log"
 	"net"
@@ -8,6 +9,10 @@ import (
 	"strings"
 
 	"github.com/rdegges/go-ipify"
+)
+
+const (
+	VERSION = "v0.1.0"
 )
 
 // Interface provides the information for a device interface
@@ -19,7 +24,22 @@ type Interface struct {
 	IPv6Address string
 }
 
+var version bool
+
+func init() {
+	// parse flags
+	flag.BoolVar(&version, "version", false, "print version and exit")
+	flag.BoolVar(&version, "v", false, "print version and exit (shorthand)")
+	flag.Parse()
+}
+
 func main() {
+
+	if version {
+		fmt.Println(VERSION)
+		return
+	}
+
 	c := make(chan *Interface)
 	ifaces, err := net.Interfaces()
 	if err != nil {
@@ -33,11 +53,10 @@ func main() {
 				log.Fatal(err)
 			}
 			c <- i
-			// fmt.Println(i.String())
 		}(iface)
 	}
 
-	// public IP address
+	// get public IP address
 	pubIP, err := ipify.GetIp()
 	if err != nil {
 		log.Fatal(err)
