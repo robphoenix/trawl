@@ -1,7 +1,6 @@
 package main
 
 import (
-	"flag"
 	"fmt"
 	"log"
 	"net"
@@ -11,6 +10,7 @@ import (
 	"github.com/rdegges/go-ipify"
 )
 
+// Interface provides the information for a device interface
 type Interface struct {
 	Name        string
 	IPv4Address string
@@ -19,27 +19,80 @@ type Interface struct {
 	IPv6Address string
 }
 
-type ExternalIP string
-
 func main() {
-
-	flag.Parse()
 	ifaces, err := net.Interfaces()
 	if err != nil {
 		log.Fatal(err)
 	}
-	fmt.Printf("\n")
 
+	fmt.Printf("\n")
 	for _, iface := range ifaces {
-		fmt.Println(New(iface).String())
+		i, err := New(iface)
+		if err != nil {
+			log.Fatal(err)
+		}
+		fmt.Println(i.String())
 	}
 
-	// public
+	// public IP address
 	pubIP, err := ipify.GetIp()
 	if err != nil {
-		fmt.Println("Couldn't get my IP address:", err)
+		log.Fatal(err)
 	}
 	fmt.Printf("public      %s\n", string(pubIP))
+}
+
+// New instantiates an Interface object for the passed in net.Interface type
+// representing a device interface
+func New(iface net.Interface) (i *Interface, err error) {
+	addrs, err := iface.Addrs()
+	if err != nil {
+		return i, err
+	}
+
+	// get IPv4 address
+	ipv4 := addrs[0].String()
+	ipv4Split := strings.Split(ipv4, "/")
+	ipv4Address := ipv4Split[0]
+
+	// get IPv4 mask and convert to dotted decimal
+	ipv4Cidr := ipv4Split[1]
+	ipv4Mask, err := toDottedDec(ipv4Cidr)
+	if err != nil {
+		return i, err
+	}
+
+	// get IPv4 network
+	_, ipnet, err := net.ParseCIDR(addrs[0].String())
+	if err != nil {
+		return i, err
+	}
+
+	// get IPv6 address & mask
+	var ipv6Address string
+	if len(addrs) > 1 {
+		ipv6Address = addrs[1].String()
+	}
+
+	return &Interface{
+		Name:        iface.Name,
+		IPv4Address: ipv4Address,
+		IPv4Mask:    ipv4Mask,
+		IPv4Network: ipnet.String(),
+		IPv6Address: ipv6Address,
+	}, nil
+}
+
+func (iface *Interface) String() string {
+	ifaceString := "%-10s  %-15s  %-15s  %-18s %s"
+	return fmt.Sprintf(
+		ifaceString,
+		iface.Name,
+		iface.IPv4Address,
+		iface.IPv4Mask,
+		iface.IPv4Network,
+		iface.IPv6Address,
+	)
 }
 
 func toDottedDec(cidr string) (s string, err error) {
@@ -48,6 +101,7 @@ func toDottedDec(cidr string) (s string, err error) {
 	if err != nil {
 		return s, err
 	}
+
 	if n > 32 || n < 0 {
 		return s, fmt.Errorf("Not a valid network mask: %s", cidr)
 	}
@@ -71,47 +125,4 @@ func toDottedDec(cidr string) (s string, err error) {
 	}
 
 	return strings.Join(mask, "."), nil
-}
-
-func New(iface net.Interface) *Interface {
-	addrs, err := iface.Addrs()
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	ipv4 := addrs[0].String()
-
-	ipv4Cidr := strings.Split(ipv4, "/")[1]
-	ipv4Mask, err := toDottedDec(ipv4Cidr)
-	if err != nil {
-		log.Fatal(err)
-	}
-	ip, ipnet, err := net.ParseCIDR(addrs[0].String())
-	if err != nil {
-		log.Fatal(err)
-	}
-	var ipv6Address string
-	if len(addrs) > 1 {
-		ipv6Address = addrs[1].String()
-	}
-
-	return &Interface{
-		Name:        iface.Name,
-		IPv4Address: ip.String(),
-		IPv4Mask:    ipv4Mask,
-		IPv4Network: ipnet.String(),
-		IPv6Address: ipv6Address,
-	}
-}
-
-func (iface *Interface) String() string {
-	ifaceString := "%-10s  %-15s  %-15s  %-18s %s"
-	return fmt.Sprintf(
-		ifaceString,
-		iface.Name,
-		iface.IPv4Address,
-		iface.IPv4Mask,
-		iface.IPv4Network,
-		iface.IPv6Address,
-	)
 }
