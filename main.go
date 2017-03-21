@@ -5,8 +5,7 @@ import (
 	"fmt"
 	"log"
 	"net"
-	"strings"
-
+	
 	"github.com/rdegges/go-ipify"
 )
 
@@ -35,15 +34,13 @@ func main() {
 	}
 
 	for _, iface := range ifaces {
-		if !(strings.Contains(iface.Name, "isatap")) {
-			go func(iface net.Interface) {
-				i, err := New(iface)
-				if err != nil {
-					log.Fatal(err)
-				}
-				c <- i
-			}(iface)
-		}
+		go func(iface net.Interface) {
+			i, err := New(iface)
+			if err != nil {
+				log.Fatal(err)
+			}
+			c <- i
+		}(iface)
 	}
 
 	// get public IP address
