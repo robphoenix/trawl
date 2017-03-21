@@ -37,7 +37,7 @@ func New(iface net.Interface) (i *Interface, err error) {
 	}
 
 	// get IPv4 network
-	_, ipnet, err := net.ParseCIDR(addrs[0].String())
+	_, ipnet, err := net.ParseCIDR(ipv4)
 	if err != nil {
 		return i, err
 	}
