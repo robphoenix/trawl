@@ -28,8 +28,7 @@ var version bool
 
 func init() {
 	// parse flags
-	flag.BoolVar(&version, "version", false, "print version and exit")
-	flag.BoolVar(&version, "v", false, "print version and exit (shorthand)")
+	flag.BoolVar(&version, "v", false, "print version and exit")
 	flag.Parse()
 }
 
