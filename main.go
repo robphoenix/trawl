@@ -13,7 +13,7 @@ import (
 
 // current release version
 const (
-	VERSION = "v0.1.1"
+	VERSION = "v0.1.2"
 )
 
 var version bool
