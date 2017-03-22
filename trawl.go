@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"net"
+	"runtime"
 	"strconv"
 	"strings"
 )
@@ -73,6 +74,9 @@ func extractAddrs(addrs []net.Addr) (ipv4 string, ipv6 string) {
 
 func (iface *Interface) String() string {
 	ifaceString := "%-10s  %-15s  %-15s  %-18s %s"
+	if runtime.GOOS == "windows" {
+		ifaceString = "%-35s  %-15s  %-15s  %-18s %s"
+	}
 	return fmt.Sprintf(
 		ifaceString,
 		iface.Name,

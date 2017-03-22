@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"net"
+	"runtime"
 	"strings"
 
 	"github.com/rdegges/go-ipify"
@@ -65,5 +66,9 @@ func main() {
 		fmt.Println(iface.String())
 	}
 
-	fmt.Printf("public      %s\n", string(pubIP))
+	publicIfaceString := "public" + strings.Repeat(" ", 6) + string(pubIP)
+	if runtime.GOOS == "windows" {
+		publicIfaceString = "Public" + strings.Repeat(" ", 31) + string(pubIP)
+	}
+	fmt.Printf("%s\n\n", publicIfaceString)
 }
