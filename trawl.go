@@ -27,13 +27,15 @@ func New(iface net.Interface) (i *Interface, err error) {
 	// we can't rely on the order of the addresses in the addrs array
 	ipv4, ipv6 := extractAddrs(addrs)
 
-	// get IPv4 address & dotted decimal mask
+	// if we have an IPv6 only interface
 	if len(ipv4) == 0 {
 		return &Interface{
 			Name:        iface.Name,
 			IPv6Address: ipv6,
 		}, nil
 	}
+
+	// get IPv4 address & dotted decimal mask
 	ipv4Split := strings.Split(ipv4, "/")
 	ipv4Address := ipv4Split[0]
 	ipv4Cidr := ipv4Split[1]

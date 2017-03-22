@@ -5,10 +5,12 @@ import (
 	"fmt"
 	"log"
 	"net"
-	
+	"strings"
+
 	"github.com/rdegges/go-ipify"
 )
 
+// current release version
 const (
 	VERSION = "v0.1.1"
 )
@@ -33,7 +35,15 @@ func main() {
 		log.Fatal(err)
 	}
 
+	var validIfaces []net.Interface
+
 	for _, iface := range ifaces {
+		if strings.Contains(iface.Flags.String(), "up") && !strings.Contains(iface.Flags.String(), "lo") {
+			validIfaces = append(validIfaces, iface)
+		}
+	}
+
+	for _, iface := range validIfaces {
 		go func(iface net.Interface) {
 			i, err := New(iface)
 			if err != nil {
@@ -50,7 +60,7 @@ func main() {
 	}
 
 	fmt.Printf("\n")
-	for range ifaces {
+	for range validIfaces {
 		iface := <-c
 		fmt.Println(iface.String())
 	}
