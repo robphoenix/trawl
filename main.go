@@ -60,7 +60,6 @@ func main() {
 		log.Fatal(err)
 	}
 
-	fmt.Printf("\n")
 	for range validIfaces {
 		iface := <-c
 		fmt.Println(iface.String())
@@ -70,5 +69,5 @@ func main() {
 	if runtime.GOOS == "windows" {
 		publicIfaceString = "Public" + strings.Repeat(" ", 31) + string(pubIP)
 	}
-	fmt.Printf("%s\n\n", publicIfaceString)
+	fmt.Printf("%s\n", publicIfaceString)
 }
