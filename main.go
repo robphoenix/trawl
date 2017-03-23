@@ -22,9 +22,9 @@ var (
 
 func init() {
 	flag.BoolVar(&version, "version", false, "print version and exit")
-	flag.BoolVar(&version, "v", false, "print version and exit")
-	flag.BoolVar(&public, "p", false, "print public IP address and exit")
+	flag.BoolVar(&version, "v", false, "print version and exit (shorthand)")
 	flag.BoolVar(&public, "public", false, "print public IP address and exit")
+	flag.BoolVar(&public, "p", false, "print public IP address and exit (shorthand)")
 	flag.Parse()
 }
 
