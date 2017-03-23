@@ -1,5 +1,13 @@
 # Change Log
 
+## [v0.1.3](https://github.com/robphoenix/trawl/tree/v0.1.3) (2017-03-23)
+[Full Changelog](https://github.com/robphoenix/trawl/compare/v0.1.2...v0.1.3)
+
+**Closed issues:**
+
+- Separate public IP into own flag [\#7](https://github.com/robphoenix/trawl/issues/7)
+- add MTU & MAC [\#6](https://github.com/robphoenix/trawl/issues/6)
+
 ## [v0.1.2](https://github.com/robphoenix/trawl/tree/v0.1.2) (2017-03-22)
 [Full Changelog](https://github.com/robphoenix/trawl/compare/v0.1.1...v0.1.2)
 
