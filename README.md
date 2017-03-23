@@ -1,6 +1,6 @@
 # ![trawl](/logo.png)
 
-> A strong fishing net for dragging along the sea bottom to collect IP addresses
+> A strong fishing net for dragging along the sea bottom to collect network interfaces.
 
 ## Linux
 
