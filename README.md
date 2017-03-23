@@ -17,8 +17,8 @@ Or it can print out your external public IP address.
 ```sh
 $ trawl
 tun0        10.6.10.6        255.255.255.255  10.6.10.6/32        1500
-wlp1s0      192.168.1.78     255.255.255.0    192.168.1.0/24      1500  10:02:b5:e4:de:8c  fe80::defe:3c33:4335:e669/64
-docker0     172.17.0.1       255.255.0.0      172.17.0.0/16       1500  02:42:58:31:a9:87
+wlp1s0      192.168.1.78     255.255.255.0    192.168.1.0/24      1500  7d:1a:b5:54:de:8c  fe80::defe:3c33:4335:e669/64
+docker0     172.17.0.1       255.255.0.0      172.17.0.0/16       1500  02:32:58:4b:a9:78
 ```
 
 ```sh
@@ -30,12 +30,17 @@ $ trawl -p
 
 ```sh
 % trawl
-VirtualBox Host-Only Network         192.168.56.1     255.255.255.0    192.168.56.0/24    fe80::31ac:de12:1d27:fbc9/64
-VirtualBox Host-Only Network #2      10.0.0.1         255.255.0.0      10.0.0.0/16        fe80::701e:c603:1aee:597e/64
-Local Area Connection 3              10.48.10.10      255.255.255.252  10.48.10.8/30      fe80::989:e670:8216:5528/64
-Local Area Connection 4              169.254.17.182   255.255.0.0      169.254.0.0/16     fe80::6cd7:885:5ae5:11b6/64
-Wireless Network Connection          192.168.1.224    255.255.255.0    192.168.1.0/24     fe80::48e8:96c3:7457:8a3d/64
-Public                               46.19.140.62
+Local Area Connection 4              169.254.17.182   255.255.0.0      169.254.0.0/16      1500  02:00:3d:5c:5c:50  fe80::6cd7:885:5ae5:11b6/64
+Teredo Tunneling Pseudo-Interface                                                             0                     fe80::101e:24fb:c110:462c/64
+VirtualBox Host-Only Network         192.168.56.1     255.255.255.0    192.168.56.0/24     1500  0a:00:32:00:00:2b  fe80::31ac:de12:1d27:fbc9/64
+VirtualBox Host-Only Network #2      10.0.0.1         255.255.0.0      10.0.0.0/16         1500  0a:00:32:00:00:2b  fe80::701e:c603:1aee:597e/64
+Local Area Connection                10.90.128.3      255.255.0.0      10.90.0.0/16        1500  d5:be:c4:70:34:f5  fe80::a4f5:c0bf:b0ca:5551/64
+Wireless Network Connection          10.26.101.64     255.255.255.0    10.26.101.0/24      1500  87:77:a3:d1:7e:2c  fe80::48e8:96c3:7457:8a3d/64
+```
+
+```
+% trawl -p
+62.239.185.211
 ```
 
 ## Installation
@@ -44,13 +49,13 @@ If you don't have the Go programming language installed you can download the bin
 [releases page](https://github.com/robphoenix/trawl/releases) and put it in your
 path ([howto ubuntu](https://askubuntu.com/questions/440691/add-a-binary-to-my-path)/[howto windows](https://uk.mathworks.com/matlabcentral/answers/94933-how-do-i-edit-my-system-path-in-windows?requestedDomain=www.mathworks.com)).
 
-If you do have Go installed, get it like you do.
+If you do have Go installed...
 
 ```
 go get -u github.com/robphoenix/trawl
 ```
 
-Or if you want to install from source you can clone with git:
+Or if you want to install from source you can clone with git...
 
 ```
 git clone https://github.com/robphoenix/trawl.git
