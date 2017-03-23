@@ -109,9 +109,9 @@ func toDottedDec(cidr string) (s string, err error) {
 }
 
 func (iface *Interface) String() string {
-	ifaceString := "%-10s  %-15s  %-15s  %-18s  %d  %s  %s"
+	ifaceString := "%-10s  %-15s  %-15s  %-18s  %4d  %17s  %s"
 	if runtime.GOOS == "windows" {
-		ifaceString = "%-35s  %-15s  %-15s  %-18s  %d  %s  %s"
+		ifaceString = "%-35s  %-15s  %-15s  %-18s  %4d  %17s  %s"
 	}
 	return fmt.Sprintf(
 		ifaceString,
