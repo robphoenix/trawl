@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"log"
 	"net"
-	"runtime"
 	"strings"
 
 	"github.com/rdegges/go-ipify"
@@ -16,10 +15,16 @@ const (
 	VERSION = "v0.1.2"
 )
 
-var version bool
+var (
+	version bool
+	public  bool
+)
 
 func init() {
+	flag.BoolVar(&version, "version", false, "print version and exit")
 	flag.BoolVar(&version, "v", false, "print version and exit")
+	flag.BoolVar(&public, "p", false, "print public IP address and exit")
+	// flag.BoolVar(&public, "public", false, "print public IP address and exit")
 	flag.Parse()
 }
 
@@ -30,7 +35,16 @@ func main() {
 		return
 	}
 
-	c := make(chan *Interface)
+	if public {
+		pubIP, err := ipify.GetIp()
+		if err != nil {
+			log.Fatal(err)
+		}
+		fmt.Println(string(pubIP))
+		return
+	}
+
+	c := make(chan string)
 	ifaces, err := net.Interfaces()
 	if err != nil {
 		log.Fatal(err)
@@ -50,24 +64,12 @@ func main() {
 			if err != nil {
 				log.Fatal(err)
 			}
-			c <- i
+			c <- i.String()
 		}(iface)
-	}
-
-	// get public IP address
-	pubIP, err := ipify.GetIp()
-	if err != nil {
-		log.Fatal(err)
 	}
 
 	for range validIfaces {
 		iface := <-c
-		fmt.Println(iface.String())
+		fmt.Println(iface)
 	}
-
-	publicIfaceString := "public" + strings.Repeat(" ", 6) + string(pubIP)
-	if runtime.GOOS == "windows" {
-		publicIfaceString = "Public" + strings.Repeat(" ", 31) + string(pubIP)
-	}
-	fmt.Printf("%s\n", publicIfaceString)
 }

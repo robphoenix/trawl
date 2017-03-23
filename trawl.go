@@ -72,21 +72,6 @@ func extractAddrs(addrs []net.Addr) (ipv4 string, ipv6 string) {
 	return
 }
 
-func (iface *Interface) String() string {
-	ifaceString := "%-10s  %-15s  %-15s  %-18s %s"
-	if runtime.GOOS == "windows" {
-		ifaceString = "%-35s  %-15s  %-15s  %-18s %s"
-	}
-	return fmt.Sprintf(
-		ifaceString,
-		iface.Name,
-		iface.IPv4Address,
-		iface.IPv4Mask,
-		iface.IPv4Network,
-		iface.IPv6Address,
-	)
-}
-
 func toDottedDec(cidr string) (s string, err error) {
 	maskBits := []string{"", "128", "192", "224", "240", "248", "252", "254", "255"}
 	n, err := strconv.Atoi(cidr)
@@ -117,4 +102,19 @@ func toDottedDec(cidr string) (s string, err error) {
 	}
 
 	return strings.Join(mask, "."), nil
+}
+
+func (iface *Interface) String() string {
+	ifaceString := "%-10s  %-15s  %-15s  %-18s %s"
+	if runtime.GOOS == "windows" {
+		ifaceString = "%-35s  %-15s  %-15s  %-18s %s"
+	}
+	return fmt.Sprintf(
+		ifaceString,
+		iface.Name,
+		iface.IPv4Address,
+		iface.IPv4Mask,
+		iface.IPv4Network,
+		iface.IPv6Address,
+	)
 }
