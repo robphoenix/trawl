@@ -31,81 +31,54 @@ func New(iface net.Interface) (i *Interface, err error) {
 	ipv4, ipv6 := extractAddrs(addrs)
 
 	// if we have an IPv6 only interface
-	if len(ipv4) == 0 {
+	if ipv4 == nil {
 		return &Interface{
 			Name:     iface.Name,
-			IPv6Addr: ipv6,
+			IPv6Addr: ipv6.String(),
 		}, nil
-	}
-
-	// get IPv4 address & dotted decimal mask
-	ipv4Split := strings.Split(ipv4, "/")
-	ipv4addr := ipv4Split[0]
-	ipv4Cidr := ipv4Split[1]
-	ipv4Mask, err := toDottedDec(ipv4Cidr)
-	if err != nil {
-		return i, err
-	}
-
-	// get IPv4 network
-	_, ipnet, err := net.ParseCIDR(ipv4)
-	if err != nil {
-		return i, err
 	}
 
 	return &Interface{
 		HardwareAddr: iface.HardwareAddr.String(),
-		IPv4Addr:     ipv4addr,
-		IPv4Mask:     ipv4Mask,
-		IPv4Network:  ipnet.String(),
-		IPv6Addr:     ipv6,
+		IPv4Addr:     ipv4.IP.String(),
+		IPv4Mask:     toDottedDec(ipv4.Mask),
+		IPv4Network:  maskedIPString(ipv4),
+		IPv6Addr:     ipv6.String(),
 		MTU:          iface.MTU,
 		Name:         iface.Name,
 	}, nil
 }
 
-func extractAddrs(addrs []net.Addr) (ipv4 string, ipv6 string) {
+func extractAddrs(addrs []net.Addr) (ipv4, ipv6 *net.IPNet) {
 	for _, addr := range addrs {
-		if a := addr.String(); strings.Contains(a, ":") {
-			ipv6 = a
-		}
-		if a := addr.String(); strings.Contains(a, ".") {
-			ipv4 = a
+		switch ipnet := addr.(type) {
+		case *net.IPNet:
+			if ip := ipnet.IP.To4(); ip != nil {
+				ipv4 = ipnet
+			} else {
+				ipv6 = ipnet
+			}
 		}
 	}
 	return
 }
 
-func toDottedDec(cidr string) (s string, err error) {
-	maskBits := []string{"", "128", "192", "224", "240", "248", "252", "254", "255"}
-	n, err := strconv.Atoi(cidr)
-	if err != nil {
-		return s, err
+const decBase = 10
+
+func toDottedDec(mask net.IPMask) string {
+	parts := make([]string, len(mask))
+	for i, part := range mask {
+		parts[i] = strconv.FormatUint(uint64(part), decBase)
 	}
+	return strings.Join(parts, ".")
+}
 
-	if n > 32 || n < 0 {
-		return s, fmt.Errorf("Not a valid network mask: %s", cidr)
-	}
-
-	allOnes := n / 8
-	someOnes := n % 8
-	mask := make([]string, 4)
-
-	for i := 0; i < allOnes; i++ {
-		mask[i] = "255"
-	}
-
-	if maskBits[someOnes] != "" {
-		mask[allOnes] = maskBits[someOnes]
-	}
-
-	for i, octet := range mask {
-		if octet == "" {
-			mask[i] = "0"
-		}
-	}
-
-	return strings.Join(mask, "."), nil
+func maskedIPString(ipnet *net.IPNet) string {
+	ip := ipnet.IP
+	mask := ipnet.Mask
+	maskOnes, _ := mask.Size()
+	suffix := "/" + strconv.FormatInt(int64(maskOnes), decBase)
+	return ip.Mask(mask).String() + suffix
 }
 
 func (iface *Interface) String() string {
