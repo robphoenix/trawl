@@ -9,6 +9,24 @@ ifconfig/ipconfig/ip/ifdata. Can also print out your external public IP address.
 ## Linux
 
 ```sh
+$ trawl -h
+Usage of trawl:
+  -l	include loopback interface in output (shorthand)
+  -loopback
+    	include loopback interface in output
+  -n	print header names (shorthand)
+  -names
+    	print header names
+  -p	print public IP address and exit (shorthand)
+  -public
+    	print public IP address and exit
+  -v	print version and exit (shorthand)
+  -version
+    	print version and exit
+```
+
+
+```sh
 $ trawl
 tun0        10.6.10.6        255.255.255.255  10.6.10.6/32        1500
 wlp1s0      192.168.1.78     255.255.255.0    192.168.1.0/24      1500  7d:1a:b5:54:de:8c  fe80::defe:3c33:4335:e669/64
@@ -16,12 +34,23 @@ docker0     172.17.0.1       255.255.0.0      172.17.0.0/16       1500  02:32:58
 ```
 
 ```sh
-$ ./trawl -n
+$ trawl -n
 Name        IPv4 Address     IPv4 Mask        IPv4 Network        MTU   MAC Address        IPv6 Address
 ----        ------------     ----------       ------------        ---   -----------        ------------
 tun0        10.6.10.6        255.255.255.255  10.6.10.6/32        1500
 wlp1s0      192.168.1.78     255.255.255.0    192.168.1.0/24      1500  7d:1a:b5:54:de:8c  fe80::defe:3c33:4335:e669/64
 docker0     172.17.0.1       255.255.0.0      172.17.0.0/16       1500  02:32:58:4b:a9:78
+```
+
+The output ignores the loopback interface by default but you can include it if
+you want:
+
+```sh
+$ trawl -l
+lo          127.0.0.1        255.0.0.0        127.0.0.0/8         65536                     ::1/128
+tun0        10.6.10.6        255.255.255.255  10.6.10.6/32        1500
+wlp1s0      192.168.1.78     255.255.255.0    192.168.1.0/24      1500   7d:1a:b5:54:de:8c  fe80::defe:3c33:4335:e669/64
+docker0     172.17.0.1       255.255.0.0      172.17.0.0/16       1500   02:32:58:4b:a9:78
 ```
 
 ```sh
