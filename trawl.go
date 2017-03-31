@@ -34,7 +34,7 @@ func New(iface net.Interface) (i *Interface, err error) {
 	if ipv4 == nil {
 		return &Interface{
 			Name:     iface.Name,
-			IPv6Addr: ipv6.String(),
+			IPv6Addr: safeIPNetToString(ipv6),
 		}, nil
 	}
 
@@ -43,7 +43,7 @@ func New(iface net.Interface) (i *Interface, err error) {
 		IPv4Addr:     ipv4.IP.String(),
 		IPv4Mask:     toDottedDec(ipv4.Mask),
 		IPv4Network:  maskedIPString(ipv4),
-		IPv6Addr:     ipv6.String(),
+		IPv6Addr:     safeIPNetToString(ipv6),
 		MTU:          iface.MTU,
 		Name:         iface.Name,
 	}, nil
@@ -96,4 +96,11 @@ func (iface *Interface) String() string {
 		iface.HardwareAddr,
 		iface.IPv6Addr,
 	)
+}
+
+func safeIPNetToString(ipnet *net.IPNet) string {
+	if ipnet == nil {
+		return "<none>"
+	}
+	return ipnet.String()
 }
