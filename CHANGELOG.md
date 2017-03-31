@@ -1,12 +1,20 @@
 # Change Log
 
-## [v0.1.3](https://github.com/robphoenix/trawl/tree/v0.1.3) (2017-03-23)
-[Full Changelog](https://github.com/robphoenix/trawl/compare/v0.1.2...v0.1.3)
+## [v0.1.4](https://github.com/robphoenix/trawl/tree/v0.1.4) (2017-03-31)
+[Full Changelog](https://github.com/robphoenix/trawl/compare/v0.1.3...v0.1.4)
 
 **Closed issues:**
 
+- add headers to output [\#9](https://github.com/robphoenix/trawl/issues/9)
 - Separate public IP into own flag [\#7](https://github.com/robphoenix/trawl/issues/7)
 - add MTU & MAC [\#6](https://github.com/robphoenix/trawl/issues/6)
+
+**Merged pull requests:**
+
+- simplify net-related code a bit and improve some other things [\#8](https://github.com/robphoenix/trawl/pull/8) ([codesenberg](https://github.com/codesenberg))
+
+## [v0.1.3](https://github.com/robphoenix/trawl/tree/v0.1.3) (2017-03-23)
+[Full Changelog](https://github.com/robphoenix/trawl/compare/v0.1.2...v0.1.3)
 
 ## [v0.1.2](https://github.com/robphoenix/trawl/tree/v0.1.2) (2017-03-22)
 [Full Changelog](https://github.com/robphoenix/trawl/compare/v0.1.1...v0.1.2)
