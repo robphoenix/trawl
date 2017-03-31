@@ -13,7 +13,7 @@ import (
 // current release version
 const (
 	OS           = runtime.GOOS
-	Version      = "v0.1.3"
+	Version      = "v0.1.4"
 	linuxHeaders = `Name        IPv4 Address     IPv4 Mask        IPv4 Network        MTU   MAC Address        IPv6 Address` + "\n" +
 		`----        ------------     ----------       ------------        ---   -----------        ------------`
 	windowsHeaders = `Name                                 IPv4 Address     IPv4 Mask        IPv4 Network        MTU   MAC Address        IPv6 Address` + "\n" +
