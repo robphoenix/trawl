@@ -39,26 +39,21 @@ func New(iface net.Interface) (i *Interface, err error) {
 		}, nil
 	}
 
-	// get IPv4 network
-	ipv4Network := getIPv4Network(ipv4)
+	// get IPv4 address and network
+	ipv4Addr, ipv4Network, err := net.ParseCIDR(ipv4)
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	return &Interface{
 		HardwareAddr: iface.HardwareAddr.String(),
-		IPv4Addr:     ipv4,
+		IPv4Addr:     ipv4Addr.String(),
 		IPv4Mask:     toDottedDec(ipv4Network.Mask),
 		IPv4Network:  ipv4Network.String(),
 		IPv6Addr:     ipv6,
 		MTU:          iface.MTU,
 		Name:         iface.Name,
 	}, nil
-}
-
-func getIPv4Network(ipv4Addr string) *net.IPNet {
-	_, ipv4Network, err := net.ParseCIDR(ipv4Addr)
-	if err != nil {
-		log.Fatal(err)
-	}
-	return ipv4Network
 }
 
 func extractAddrs(addrs []net.Addr) (ipv4, ipv6 string) {
