@@ -9,8 +9,6 @@ import (
 	"strings"
 )
 
-const decBase = 10
-
 // Interface provides the information for a device interface
 type Interface struct {
 	HardwareAddr string
@@ -34,47 +32,43 @@ func New(iface net.Interface) (i *Interface, err error) {
 	ipv4, ipv6 := extractAddrs(addrs)
 
 	// if we have an IPv6 only interface
-	if ipv4 == nil {
+	if ipv4 == "" {
 		return &Interface{
 			Name:     iface.Name,
-			IPv6Addr: safeIPNetToString(ipv6),
+			IPv6Addr: ipv6,
 		}, nil
 	}
 
 	// get IPv4 network
-	ipv4Network, err := getIPv4Network(ipv4)
-	if err != nil {
-		log.Fatal(err)
-	}
+	ipv4Network := getIPv4Network(ipv4)
 
 	return &Interface{
 		HardwareAddr: iface.HardwareAddr.String(),
-		IPv4Addr:     ipv4.IP.String(),
-		IPv4Mask:     toDottedDec(ipv4.Mask),
-		IPv4Network:  ipv4Network,
-		IPv6Addr:     safeIPNetToString(ipv6),
+		IPv4Addr:     ipv4,
+		IPv4Mask:     toDottedDec(ipv4Network.Mask),
+		IPv4Network:  ipv4Network.String(),
+		IPv6Addr:     ipv6,
 		MTU:          iface.MTU,
 		Name:         iface.Name,
 	}, nil
 }
 
-func getIPv4Network(ipv4Addr *net.IPNet) (string, error) {
-	_, IPNet, err := net.ParseCIDR(ipv4Addr.String())
+func getIPv4Network(ipv4Addr string) *net.IPNet {
+	_, ipv4Network, err := net.ParseCIDR(ipv4Addr)
 	if err != nil {
-		return "", err
+		log.Fatal(err)
 	}
-	return IPNet.String(), nil
+	return ipv4Network
 }
 
-func extractAddrs(addrs []net.Addr) (ipv4, ipv6 *net.IPNet) {
+func extractAddrs(addrs []net.Addr) (ipv4, ipv6 string) {
 	for _, addr := range addrs {
-		switch ipnet := addr.(type) {
-		case *net.IPNet:
-			if ip := ipnet.IP.To4(); ip != nil {
-				ipv4 = ipnet
-			} else {
-				ipv6 = ipnet
-			}
+		a := addr.String()
+		switch {
+		case strings.Contains(a, ":"):
+			ipv6 = a
+		case strings.Contains(a, "."):
+			ipv4 = a
 		}
 	}
 	return
@@ -83,7 +77,7 @@ func extractAddrs(addrs []net.Addr) (ipv4, ipv6 *net.IPNet) {
 func toDottedDec(mask net.IPMask) string {
 	parts := make([]string, len(mask))
 	for i, part := range mask {
-		parts[i] = strconv.FormatUint(uint64(part), decBase)
+		parts[i] = strconv.FormatUint(uint64(part), 10)
 	}
 	return strings.Join(parts, ".")
 }
@@ -103,11 +97,4 @@ func (iface *Interface) String() string {
 		iface.HardwareAddr,
 		iface.IPv6Addr,
 	)
-}
-
-func safeIPNetToString(ipnet *net.IPNet) string {
-	if ipnet == nil {
-		return ""
-	}
-	return ipnet.String()
 }
