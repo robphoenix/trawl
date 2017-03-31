@@ -17,6 +17,7 @@ const (
 	os                = runtime.GOOS
 	win               = "windows"
 	linux             = "linux"
+	darwin            = "darwin"
 	underlineChar     = "-"
 	nameHeader        = "Name"
 	ipv4AddrHeader    = "IPv4 Address"
@@ -27,6 +28,7 @@ const (
 	ipv6AddrHeader    = "IPv6 Address"
 	windowsString     = "%-35s  %-15s  %-15s  %-18s  %-5s  %-17s  %s\n"
 	linuxString       = "%-10s  %-15s  %-15s  %-18s  %-5s  %-17s  %s\n"
+	darwinString      = "%-10s  %-15s  %-15s  %-18s  %-5s  %-17s  %s\n"
 )
 
 var (
@@ -87,6 +89,8 @@ func osString() (s string) {
 		s = windowsString
 	case linux:
 		s = linuxString
+	case darwin:
+		s = darwinString
 	}
 	return
 }
