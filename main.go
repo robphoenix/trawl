@@ -25,14 +25,15 @@ const (
 	mtuHeader         = "MTU"
 	macHeader         = "MAC Address"
 	ipv6AddrHeader    = "IPv6 Address"
-	windowsString     = "%-35s  %-15s  %-15s  %-18s  %-4s  %-17s  %s\n"
-	linuxString       = "%-10s  %-15s  %-15s  %-18s  %-4s  %-17s  %s\n"
+	windowsString     = "%-35s  %-15s  %-15s  %-18s  %-5s  %-17s  %s\n"
+	linuxString       = "%-10s  %-15s  %-15s  %-18s  %-5s  %-17s  %s\n"
 )
 
 var (
-	version bool
-	public  bool
-	names   bool
+	version  bool
+	public   bool
+	names    bool
+	loopback bool
 )
 
 func init() {
@@ -42,6 +43,8 @@ func init() {
 	flag.BoolVar(&public, "p", false, "print public IP address and exit (shorthand)")
 	flag.BoolVar(&names, "names", false, "print header names")
 	flag.BoolVar(&names, "n", false, "print header names (shorthand)")
+	flag.BoolVar(&loopback, "loopback", false, "include loopback interface in output")
+	flag.BoolVar(&loopback, "l", false, "include loopback interface in output (shorthand)")
 	flag.Parse()
 }
 
@@ -64,7 +67,7 @@ func main() {
 		printHeaders()
 	}
 
-	ifaces := getIfaces()
+	ifaces := getIfaces(loopback)
 	for _, iface := range ifaces {
 		i, err := New(iface)
 		if err != nil {
@@ -112,15 +115,18 @@ func printHeaders() {
 	)
 }
 
-func getIfaces() (ifaces []net.Interface) {
+func getIfaces(loopback bool) (ifaces []net.Interface) {
 	allIfaces, err := net.Interfaces()
 	if err != nil {
 		log.Fatal(err)
 	}
 	for _, iface := range allIfaces {
+		var l int
 		up := iface.Flags & net.FlagUp
-		loopback := iface.Flags & net.FlagLoopback
-		if up != 0 && loopback == 0 {
+		if !loopback {
+			l = int(iface.Flags & net.FlagLoopback)
+		}
+		if up != 0 && l == 0 {
 			ifaces = append(ifaces, iface)
 		}
 	}
