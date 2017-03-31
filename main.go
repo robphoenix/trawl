@@ -6,18 +6,27 @@ import (
 	"log"
 	"net"
 	"runtime"
+	"strings"
 
 	"github.com/rdegges/go-ipify"
 )
 
-// current release version
 const (
-	OS           = runtime.GOOS
-	Version      = "v0.1.4"
-	linuxHeaders = `Name        IPv4 Address     IPv4 Mask        IPv4 Network        MTU   MAC Address        IPv6 Address` + "\n" +
-		`----        ------------     ----------       ------------        ---   -----------        ------------`
-	windowsHeaders = `Name                                 IPv4 Address     IPv4 Mask        IPv4 Network        MTU   MAC Address        IPv6 Address` + "\n" +
-		`----                                 ------------     ----------       ------------        ---   -----------        ------------`
+	// Version of current release
+	Version           = "v0.1.4"
+	os                = runtime.GOOS
+	win               = "windows"
+	linux             = "linux"
+	underlineChar     = "-"
+	nameHeader        = "Name"
+	ipv4AddrHeader    = "IPv4 Address"
+	ipv4MaskHeader    = "IPv4 Mask"
+	ipv4NetworkHeader = "IPv4 Network"
+	mtuHeader         = "MTU"
+	macHeader         = "MAC Address"
+	ipv6AddrHeader    = "IPv6 Address"
+	windowsString     = "%-35s  %-15s  %-15s  %-18s  %-4s  %-17s  %s\n"
+	linuxString       = "%-10s  %-15s  %-15s  %-18s  %-4s  %-17s  %s\n"
 )
 
 var (
@@ -51,35 +60,69 @@ func main() {
 		return
 	}
 
-	ifaces, err := net.Interfaces()
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	var validIfaces []net.Interface
-
-	for _, iface := range ifaces {
-		up := iface.Flags & net.FlagUp
-		loopback := iface.Flags & net.FlagLoopback
-		if up != 0 && loopback == 0 {
-			validIfaces = append(validIfaces, iface)
-		}
-	}
-
 	if names {
-		switch OS {
-		case "windows":
-			fmt.Println(windowsHeaders)
-		case "linux":
-			fmt.Println(linuxHeaders)
-		}
+		printHeaders()
 	}
 
-	for _, iface := range validIfaces {
+	ifaces := getIfaces()
+	for _, iface := range ifaces {
 		i, err := New(iface)
 		if err != nil {
 			log.Fatal(err)
 		}
-		fmt.Println(i)
+		fmt.Printf(i.String())
 	}
+}
+
+func underline(s string) string {
+	return strings.Repeat(underlineChar, len(s))
+}
+
+func osString() (s string) {
+	switch os {
+	case win:
+		s = windowsString
+	case linux:
+		s = linuxString
+	}
+	return
+}
+
+func printHeaders() {
+	headersString := osString()
+	fmt.Printf(
+		headersString,
+		nameHeader,
+		ipv4AddrHeader,
+		ipv4MaskHeader,
+		ipv4NetworkHeader,
+		mtuHeader,
+		macHeader,
+		ipv6AddrHeader,
+	)
+	fmt.Printf(
+		headersString,
+		underline(nameHeader),
+		underline(ipv4AddrHeader),
+		underline(ipv4MaskHeader),
+		underline(ipv4NetworkHeader),
+		underline(mtuHeader),
+		underline(macHeader),
+		underline(ipv6AddrHeader),
+	)
+}
+
+func getIfaces() (ifaces []net.Interface) {
+	allIfaces, err := net.Interfaces()
+	if err != nil {
+		log.Fatal(err)
+	}
+	for _, iface := range allIfaces {
+		up := iface.Flags & net.FlagUp
+		loopback := iface.Flags & net.FlagLoopback
+		if up != 0 && loopback == 0 {
+			ifaces = append(ifaces, iface)
+		}
+	}
+	return
 }

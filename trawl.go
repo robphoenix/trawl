@@ -19,8 +19,7 @@ type Interface struct {
 	Name         string
 }
 
-// New instantiates an Interface object for the passed in net.Interface type
-// representing a device interface
+// New instantiates an Interface object representing a device interface
 func New(iface net.Interface) (i *Interface, err error) {
 	addrs, err := iface.Addrs()
 	if err != nil {
@@ -55,6 +54,20 @@ func New(iface net.Interface) (i *Interface, err error) {
 	}, nil
 }
 
+func (iface *Interface) String() string {
+	ifaceString := osString()
+	return fmt.Sprintf(
+		ifaceString,
+		iface.Name,
+		iface.IPv4Addr,
+		iface.IPv4Mask,
+		iface.IPv4Network,
+		strconv.Itoa(iface.MTU),
+		iface.HardwareAddr,
+		iface.IPv6Addr,
+	)
+}
+
 func extractAddrs(addrs []net.Addr) (ipv4, ipv6 string) {
 	for _, addr := range addrs {
 		a := addr.String()
@@ -74,21 +87,4 @@ func toDottedDec(mask net.IPMask) string {
 		parts[i] = strconv.FormatUint(uint64(part), 10)
 	}
 	return strings.Join(parts, ".")
-}
-
-func (iface *Interface) String() string {
-	ifaceString := "%-10s  %-15s  %-15s  %-18s  %4d  %17s  %s"
-	if OS == "windows" {
-		ifaceString = "%-35s  %-15s  %-15s  %-18s  %4d  %17s  %s"
-	}
-	return fmt.Sprintf(
-		ifaceString,
-		iface.Name,
-		iface.IPv4Addr,
-		iface.IPv4Mask,
-		iface.IPv4Network,
-		iface.MTU,
-		iface.HardwareAddr,
-		iface.IPv6Addr,
-	)
 }
