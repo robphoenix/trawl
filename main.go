@@ -6,18 +6,28 @@ import (
 	"log"
 	"net"
 	"runtime"
+	"strings"
 
 	"github.com/rdegges/go-ipify"
 )
 
-// current release version
 const (
-	OS           = runtime.GOOS
-	Version      = "v0.1.4"
-	linuxHeaders = `Name        IPv4 Address     IPv4 Mask        IPv4 Network        MTU   MAC Address        IPv6 Address` + "\n" +
-		`----        ------------     ----------       ------------        ---   -----------        ------------`
-	windowsHeaders = `Name                                 IPv4 Address     IPv4 Mask        IPv4 Network        MTU   MAC Address        IPv6 Address` + "\n" +
+	// Version of current release
+	Version           = "v0.1.4"
+	os                = runtime.GOOS
+	win               = "windows"
+	linux             = "linux"
+	underlineChar     = "-"
+	nameHeader        = "Name"
+	ipv4AddrHeader    = "IPv4 Address"
+	ipv4MaskHeader    = "IPv4 Mask"
+	ipv4NetworkHeader = "IPv4 Network"
+	mtuHeader         = "MTU"
+	macHeader         = "MAC Address"
+	ipv6AddrHeader    = "IPv6 Address"
+	windowsHeaders    = `Name                                 IPv4 Address     IPv4 Mask        IPv4 Network        MTU   MAC Address        IPv6 Address` + "\n" +
 		`----                                 ------------     ----------       ------------        ---   -----------        ------------`
+	linuxHeaderString = "%-10s  %-15s  %-15s  %-18s  %-4s  %-17s  %s"
 )
 
 var (
@@ -25,6 +35,10 @@ var (
 	public  bool
 	names   bool
 )
+
+func underline(s string) string {
+	return strings.Repeat(underlineChar, len(s))
+}
 
 func init() {
 	flag.BoolVar(&version, "version", false, "print version and exit")
@@ -67,11 +81,15 @@ func main() {
 	}
 
 	if names {
-		switch OS {
-		case "windows":
+		switch os {
+		case win:
 			fmt.Println(windowsHeaders)
-		case "linux":
-			fmt.Println(linuxHeaders)
+		case linux:
+			// fmt.Println(linuxHeaders)
+			fmt.Printf(linuxHeaderString, nameHeader, ipv4AddrHeader, ipv4MaskHeader, ipv4NetworkHeader, mtuHeader, macHeader, ipv6AddrHeader)
+			fmt.Printf("\n")
+			fmt.Printf(linuxHeaderString, underline(nameHeader), underline(ipv4AddrHeader), underline(ipv4MaskHeader), underline(ipv4NetworkHeader), underline(mtuHeader), underline(macHeader), underline(ipv6AddrHeader))
+			fmt.Printf("\n")
 		}
 	}
 
