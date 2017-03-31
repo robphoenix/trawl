@@ -8,6 +8,8 @@ import (
 	"strings"
 )
 
+const decBase = 10
+
 // Interface provides the information for a device interface
 type Interface struct {
 	HardwareAddr string
@@ -63,8 +65,6 @@ func extractAddrs(addrs []net.Addr) (ipv4, ipv6 *net.IPNet) {
 	return
 }
 
-const decBase = 10
-
 func toDottedDec(mask net.IPMask) string {
 	parts := make([]string, len(mask))
 	for i, part := range mask {
@@ -100,7 +100,7 @@ func (iface *Interface) String() string {
 
 func safeIPNetToString(ipnet *net.IPNet) string {
 	if ipnet == nil {
-		return "<none>"
+		return ""
 	}
 	return ipnet.String()
 }

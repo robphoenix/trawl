@@ -23,8 +23,7 @@ func init() {
 	flag.BoolVar(&version, "version", false, "print version and exit")
 	flag.BoolVar(&version, "v", false, "print version and exit (shorthand)")
 	flag.BoolVar(&public, "public", false, "print public IP address and exit")
-	flag.BoolVar(&public, "p", false,
-		"print public IP address and exit (shorthand)")
+	flag.BoolVar(&public, "p", false, "print public IP address and exit (shorthand)")
 	flag.Parse()
 }
 
@@ -52,8 +51,9 @@ func main() {
 	var validIfaces []net.Interface
 
 	for _, iface := range ifaces {
-		if (iface.Flags&net.FlagUp) != 0 &&
-			(iface.Flags&net.FlagLoopback) == 0 {
+		up := iface.Flags & net.FlagUp
+		loopback := iface.Flags & net.FlagLoopback
+		if up != 0 && loopback == 0 {
 			validIfaces = append(validIfaces, iface)
 		}
 	}
