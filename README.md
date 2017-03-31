@@ -4,18 +4,21 @@
 > and similar flotsam & jetsam.
 
 Prints out network interface information to the console, much like
-ifconfig/ipconfig/ip/ifdata, of the form:
-
-```
-Name  IPv4 Address  IPv4 Mask  IPv4 Network  MTU  MAC Address  IPv6 Address
-```
-
-Or it can print out your external public IP address.
+ifconfig/ipconfig/ip/ifdata. Can also print out your external public IP address.
 
 ## Linux
 
 ```sh
 $ trawl
+tun0        10.6.10.6        255.255.255.255  10.6.10.6/32        1500
+wlp1s0      192.168.1.78     255.255.255.0    192.168.1.0/24      1500  7d:1a:b5:54:de:8c  fe80::defe:3c33:4335:e669/64
+docker0     172.17.0.1       255.255.0.0      172.17.0.0/16       1500  02:32:58:4b:a9:78
+```
+
+```sh
+$ ./trawl -n
+Name        IPv4 Address     IPv4 Mask        IPv4 Network        MTU   MAC Address        IPv6 Address
+----        ------------     ----------       ------------        ---   -----------        ------------
 tun0        10.6.10.6        255.255.255.255  10.6.10.6/32        1500
 wlp1s0      192.168.1.78     255.255.255.0    192.168.1.0/24      1500  7d:1a:b5:54:de:8c  fe80::defe:3c33:4335:e669/64
 docker0     172.17.0.1       255.255.0.0      172.17.0.0/16       1500  02:32:58:4b:a9:78

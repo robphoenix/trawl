@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"log"
 	"net"
-	"runtime"
 	"strconv"
 	"strings"
 )
@@ -79,7 +78,7 @@ func toDottedDec(mask net.IPMask) string {
 
 func (iface *Interface) String() string {
 	ifaceString := "%-10s  %-15s  %-15s  %-18s  %4d  %17s  %s"
-	if runtime.GOOS == "windows" {
+	if OS == "windows" {
 		ifaceString = "%-35s  %-15s  %-15s  %-18s  %4d  %17s  %s"
 	}
 	return fmt.Sprintf(
