@@ -16,8 +16,8 @@ const (
 	Version      = "v0.1.3"
 	linuxHeaders = `Name        IPv4 Address     IPv4 Mask        IPv4 Network        MTU   MAC Address        IPv6 Address` + "\n" +
 		`----        ------------     ----------       ------------        ---   -----------        ------------`
-	windowsHeaders = `Name                       IPv4 Address     IPv4 Mask        IPv4 Network        MTU   MAC Address        IPv6 Address` + "\n" +
-		`----                       ------------     ----------       ------------        ---   -----------        ------------`
+	windowsHeaders = `Name                                 IPv4 Address     IPv4 Mask        IPv4 Network        MTU   MAC Address        IPv6 Address` + "\n" +
+		`----                                 ------------     ----------       ------------        ---   -----------        ------------`
 )
 
 var (
