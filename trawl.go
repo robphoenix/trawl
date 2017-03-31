@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"net"
 	"runtime"
 	"strconv"
@@ -40,15 +41,29 @@ func New(iface net.Interface) (i *Interface, err error) {
 		}, nil
 	}
 
+	// get IPv4 network
+	ipv4Network, err := getIPv4Network(ipv4)
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	return &Interface{
 		HardwareAddr: iface.HardwareAddr.String(),
 		IPv4Addr:     ipv4.IP.String(),
 		IPv4Mask:     toDottedDec(ipv4.Mask),
-		IPv4Network:  maskedIPString(ipv4),
+		IPv4Network:  ipv4Network,
 		IPv6Addr:     safeIPNetToString(ipv6),
 		MTU:          iface.MTU,
 		Name:         iface.Name,
 	}, nil
+}
+
+func getIPv4Network(ipv4Addr *net.IPNet) (string, error) {
+	_, IPNet, err := net.ParseCIDR(ipv4Addr.String())
+	if err != nil {
+		return "", err
+	}
+	return IPNet.String(), nil
 }
 
 func extractAddrs(addrs []net.Addr) (ipv4, ipv6 *net.IPNet) {
@@ -71,14 +86,6 @@ func toDottedDec(mask net.IPMask) string {
 		parts[i] = strconv.FormatUint(uint64(part), decBase)
 	}
 	return strings.Join(parts, ".")
-}
-
-func maskedIPString(ipnet *net.IPNet) string {
-	ip := ipnet.IP
-	mask := ipnet.Mask
-	maskOnes, _ := mask.Size()
-	suffix := "/" + strconv.FormatInt(int64(maskOnes), decBase)
-	return ip.Mask(mask).String() + suffix
 }
 
 func (iface *Interface) String() string {
