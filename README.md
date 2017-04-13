@@ -105,22 +105,17 @@ Loopback Pseudo-Interface 1          127.0.0.1        255.0.0.0        127.0.0.0
 
 ## Installation
 
-If you don't have the Go programming language installed you can download the binary from the
-[releases page](https://github.com/robphoenix/trawl/releases) and put it in your
-path ([howto ubuntu](https://askubuntu.com/questions/440691/add-a-binary-to-my-path)/[howto windows](https://uk.mathworks.com/matlabcentral/answers/94933-how-do-i-edit-my-system-path-in-windows?requestedDomain=www.mathworks.com)).
+If you don't have the Go programming language installed you can download the
+appropriate binary for your system from the [releases page](https://github.com/robphoenix/trawl/releases),
+rename it as `trawl`, and put it in your path ([howto ubuntu](https://askubuntu.com/questions/440691/add-a-binary-to-my-path)/[howto windows](https://uk.mathworks.com/matlabcentral/answers/94933-how-do-i-edit-my-system-path-in-windows?requestedDomain=www.mathworks.com)).
+
+> I have not tried all of the binaries, so if there's a problem with one let
+> me know, thanks.
 
 If you do have Go installed...
 
 ```
 go get -u github.com/robphoenix/trawl
-```
-
-Or if you want to install from source you can clone with git...
-
-```
-git clone https://github.com/robphoenix/trawl.git
-cd trawl
-go install
 ```
 
 ## Acknowledgements
