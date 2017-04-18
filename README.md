@@ -23,6 +23,8 @@ Usage of trawl:
     	print version and exit
 ```
 
+[![Issue Count](https://codeclimate.com/github/robphoenix/trawl/badges/issue_count.svg?style=flat-square)](https://codeclimate.com/github/robphoenix/trawl)
+
 ## Example Output
 
 ### Linux/macOS
