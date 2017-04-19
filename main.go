@@ -33,11 +33,12 @@ const (
 )
 
 var (
-	version  bool
-	public   bool
-	names    bool
-	loopback bool
-	filter   string
+	version    bool
+	public     bool
+	names      bool
+	loopback   bool
+	interfaces bool
+	filter     string
 )
 
 func init() {
@@ -49,8 +50,10 @@ func init() {
 	flag.BoolVar(&names, "n", false, "print header names (shorthand)")
 	flag.BoolVar(&loopback, "loopback", false, "include loopback interface in output")
 	flag.BoolVar(&loopback, "l", false, "include loopback interface in output (shorthand)")
-	flag.StringVar(&filter, "f", "", "filter interface names with a regular expression (shorthand)")
+	flag.BoolVar(&interfaces, "interfaces", false, "list available interfaces")
+	flag.BoolVar(&interfaces, "i", false, "list available interfaces (shorthand)")
 	flag.StringVar(&filter, "filter", "", "filter interface names with a regular expression")
+	flag.StringVar(&filter, "f", "", "filter interface names with a regular expression (shorthand)")
 	flag.Parse()
 }
 
@@ -69,13 +72,16 @@ func main() {
 		return
 	}
 
+	if interfaces {
+		fmt.Println(availableIfaces())
+		return
+	}
+
 	if names {
 		printHeaders()
 	}
 
-	ifaces := getIfaces(loopback, filter)
-
-	for _, iface := range ifaces {
+	for _, iface := range getIfaces(loopback, filter) {
 		i, err := New(iface)
 		if err != nil {
 			log.Fatal(err)
@@ -144,4 +150,16 @@ func getIfaces(loopback bool, filter string) (ifaces []net.Interface) {
 		}
 	}
 	return
+}
+
+func availableIfaces() string {
+	var availIfaces []string
+	ifaces, err := net.Interfaces()
+	if err != nil {
+		log.Fatal(err)
+	}
+	for _, iface := range ifaces {
+		availIfaces = append(availIfaces, iface.Name)
+	}
+	return strings.Join(availIfaces, ", ")
 }
