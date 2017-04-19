@@ -157,15 +157,23 @@ func getIfaces(loopback bool, filter string) (ifaces []net.Interface) {
 	}
 	for _, iface := range allIfaces {
 		var l int
-		up := iface.Flags & net.FlagUp
+		// is it a loopback interface? do we want the loopback interface?
 		if !loopback {
 			l = int(iface.Flags & net.FlagLoopback)
 		}
+		// does the interface pass the filter?
 		matched, err := regexp.MatchString(filter, iface.Name)
 		if err != nil {
 			log.Fatal(err)
 		}
-		if up != 0 && l == 0 && matched {
+		// does the interface have any available addresses?
+		addrs, err := iface.Addrs()
+		if err != nil {
+			log.Fatal(err)
+		}
+		// is the interface up?
+		up := iface.Flags & net.FlagUp
+		if up != 0 && l == 0 && matched && len(addrs) > 0 {
 			ifaces = append(ifaces, iface)
 		}
 	}

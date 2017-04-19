@@ -15,32 +15,28 @@ type Interface struct {
 	IPv4Mask     string
 	IPv4Network  string
 	IPv6Addr     string
-	MTU          int
+	MTU          string
 	Name         string
 }
 
 // New instantiates an Interface object representing a device interface
-func New(iface net.Interface) (i *Interface, err error) {
+func New(iface net.Interface) (*Interface, error) {
 	addrs, err := iface.Addrs()
 	if err != nil {
-		return i, err
+		return &Interface{}, err
 	}
 
 	// we can't rely on the order of the addresses in the addrs array
 	ipv4, ipv6 := extractAddrs(addrs)
 
-	// if we have an IPv6 only interface
-	if ipv4 == "" {
-		return &Interface{
-			Name:     iface.Name,
-			IPv6Addr: ipv6,
-		}, nil
-	}
-
 	// get IPv4 address and network
-	ipv4Addr, ipv4Network, err := net.ParseCIDR(ipv4)
-	if err != nil {
-		log.Fatal(err)
+	var ipv4Addr net.IP
+	var ipv4Network *net.IPNet
+	if len(ipv4) > 0 {
+		ipv4Addr, ipv4Network, err = net.ParseCIDR(ipv4)
+		if err != nil {
+			log.Fatal(err)
+		}
 	}
 
 	return &Interface{
@@ -49,9 +45,16 @@ func New(iface net.Interface) (i *Interface, err error) {
 		IPv4Mask:     toDottedDec(ipv4Network.Mask),
 		IPv4Network:  ipv4Network.String(),
 		IPv6Addr:     ipv6,
-		MTU:          iface.MTU,
+		MTU:          strconv.Itoa(iface.MTU),
 		Name:         iface.Name,
 	}, nil
+}
+
+func setMissingValue(s string) string {
+	if s == "" {
+		return "-"
+	}
+	return s
 }
 
 func (iface *Interface) String() string {
@@ -59,12 +62,12 @@ func (iface *Interface) String() string {
 	return fmt.Sprintf(
 		ifaceString,
 		iface.Name,
-		iface.IPv4Addr,
-		iface.IPv4Mask,
-		iface.IPv4Network,
-		strconv.Itoa(iface.MTU),
-		iface.HardwareAddr,
-		iface.IPv6Addr,
+		setMissingValue(iface.IPv4Addr),
+		setMissingValue(iface.IPv4Mask),
+		setMissingValue(iface.IPv4Network),
+		setMissingValue(iface.MTU),
+		setMissingValue(iface.HardwareAddr),
+		setMissingValue(iface.IPv6Addr),
 	)
 }
 
