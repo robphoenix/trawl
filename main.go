@@ -58,6 +58,7 @@ func init() {
 }
 
 func main() {
+
 	if version {
 		fmt.Println(Version)
 		return
@@ -74,6 +75,25 @@ func main() {
 
 	if interfaces {
 		fmt.Println(availableIfaces())
+		return
+	}
+
+	args := flag.Args()
+	if len(args) > 0 {
+		for _, arg := range args {
+			iface, err := net.InterfaceByName(arg)
+			if err != nil {
+				log.Fatal(err)
+			}
+			i, err := New(*iface)
+			if err != nil {
+				log.Fatal(err)
+			}
+			if names {
+				printHeaders()
+			}
+			fmt.Printf(i.String())
+		}
 		return
 	}
 
