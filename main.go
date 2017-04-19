@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"net"
+	"regexp"
 	"runtime"
 	"strings"
 
@@ -36,6 +37,7 @@ var (
 	public   bool
 	names    bool
 	loopback bool
+	filter   string
 )
 
 func init() {
@@ -47,6 +49,8 @@ func init() {
 	flag.BoolVar(&names, "n", false, "print header names (shorthand)")
 	flag.BoolVar(&loopback, "loopback", false, "include loopback interface in output")
 	flag.BoolVar(&loopback, "l", false, "include loopback interface in output (shorthand)")
+	flag.StringVar(&filter, "f", "", "filter interface names with a regular expression (shorthand)")
+	flag.StringVar(&filter, "filter", "", "filter interface names with a regular expression")
 	flag.Parse()
 }
 
@@ -69,7 +73,8 @@ func main() {
 		printHeaders()
 	}
 
-	ifaces := getIfaces(loopback)
+	ifaces := getIfaces(loopback, filter)
+
 	for _, iface := range ifaces {
 		i, err := New(iface)
 		if err != nil {
@@ -119,7 +124,7 @@ func printHeaders() {
 	)
 }
 
-func getIfaces(loopback bool) (ifaces []net.Interface) {
+func getIfaces(loopback bool, filter string) (ifaces []net.Interface) {
 	allIfaces, err := net.Interfaces()
 	if err != nil {
 		log.Fatal(err)
@@ -130,7 +135,11 @@ func getIfaces(loopback bool) (ifaces []net.Interface) {
 		if !loopback {
 			l = int(iface.Flags & net.FlagLoopback)
 		}
-		if up != 0 && l == 0 {
+		matched, err := regexp.MatchString(filter, iface.Name)
+		if err != nil {
+			log.Fatal(err)
+		}
+		if up != 0 && l == 0 && matched {
 			ifaces = append(ifaces, iface)
 		}
 	}
