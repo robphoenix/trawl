@@ -14,7 +14,7 @@ import (
 const (
 	// Version of current release
 	Version           = "v0.1.4"
-	os                = runtime.GOOS
+	opSys             = runtime.GOOS
 	win               = "windows"
 	linux             = "linux"
 	darwin            = "darwin"
@@ -84,7 +84,7 @@ func underline(s string) string {
 }
 
 func osString() (s string) {
-	switch os {
+	switch opSys {
 	case win:
 		s = windowsString
 	case linux:
