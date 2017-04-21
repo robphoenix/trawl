@@ -60,12 +60,12 @@ func init() {
 	flag.BoolVar(&interfaces, "i", false, "list available interfaces (shorthand)")
 	flag.StringVar(&filter, "filter", "", "filter interface names with a regular expression")
 	flag.StringVar(&filter, "f", "", "filter interface names with a regular expression (shorthand)")
-	flag.BoolVar(&ipv4address, "a", false, "print only IPv4 address, requires interface")
-	flag.BoolVar(&ipv4mask, "m", false, "print only IPv4 subnet mask, requires interface")
-	flag.BoolVar(&ipv4network, "s", false, "print only IPv4 network (subnet), requires interface")
-	flag.BoolVar(&mtu, "u", false, "print only MTU, requires interface")
-	flag.BoolVar(&hwAddress, "hw", false, "print only MAC address (hardware address), requires interface")
-	flag.BoolVar(&ipv6address, "6a", false, "print only IPv6 address, requires interface")
+	flag.BoolVar(&ipv4address, "a", false, "print only IPv4 address, requires interface name")
+	flag.BoolVar(&ipv4mask, "m", false, "print only IPv4 subnet mask, requires interface name")
+	flag.BoolVar(&ipv4network, "s", false, "print only IPv4 network (subnet), requires interface name")
+	flag.BoolVar(&mtu, "u", false, "print only MTU, requires interface name")
+	flag.BoolVar(&hwAddress, "hw", false, "print only MAC address (hardware address), requires interface name")
+	flag.BoolVar(&ipv6address, "6a", false, "print only IPv6 address, requires interface name")
 	flag.Parse()
 }
 
