@@ -43,6 +43,7 @@ var (
 	ipv4mask    bool
 	ipv4network bool
 	mtu         bool
+	hwAddress   bool
 )
 
 func init() {
@@ -62,6 +63,7 @@ func init() {
 	flag.BoolVar(&ipv4mask, "m", false, "print only IPv4 subnet mask, requires interface")
 	flag.BoolVar(&ipv4network, "s", false, "print only IPv4 network (subnet), requires interface")
 	flag.BoolVar(&mtu, "u", false, "print only MTU, requires interface")
+	flag.BoolVar(&hwAddress, "hw", false, "print only MAC address (hardware address), requires interface")
 	flag.Parse()
 }
 
@@ -111,6 +113,10 @@ func main() {
 			}
 			if mtu {
 				fmt.Printf("%s\n", i.MTU)
+				return
+			}
+			if hwAddress {
+				fmt.Printf("%s\n", i.HardwareAddr)
 				return
 			}
 			if names {
