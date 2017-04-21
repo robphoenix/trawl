@@ -33,12 +33,13 @@ const (
 )
 
 var (
-	version    bool
-	public     bool
-	names      bool
-	loopback   bool
-	interfaces bool
-	filter     string
+	version     bool
+	public      bool
+	names       bool
+	loopback    bool
+	interfaces  bool
+	filter      string
+	ipv4address bool
 )
 
 func init() {
@@ -54,6 +55,7 @@ func init() {
 	flag.BoolVar(&interfaces, "i", false, "list available interfaces (shorthand)")
 	flag.StringVar(&filter, "filter", "", "filter interface names with a regular expression")
 	flag.StringVar(&filter, "f", "", "filter interface names with a regular expression (shorthand)")
+	flag.BoolVar(&ipv4address, "a", false, "print only IPv4 address, requires interface")
 	flag.Parse()
 }
 
@@ -91,6 +93,10 @@ func main() {
 			}
 			if names {
 				printHeaders()
+			}
+			if ipv4address {
+				fmt.Printf("%s\n", i.IPv4Addr)
+				return
 			}
 			fmt.Printf(i.String())
 		}
