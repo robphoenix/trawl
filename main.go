@@ -41,6 +41,7 @@ var (
 	filter      string
 	ipv4address bool
 	ipv4mask    bool
+	ipv4network bool
 )
 
 func init() {
@@ -58,6 +59,7 @@ func init() {
 	flag.StringVar(&filter, "f", "", "filter interface names with a regular expression (shorthand)")
 	flag.BoolVar(&ipv4address, "a", false, "print only IPv4 address, requires interface")
 	flag.BoolVar(&ipv4mask, "m", false, "print only IPv4 subnet mask, requires interface")
+	flag.BoolVar(&ipv4network, "s", false, "print only IPv4 network (subnet), requires interface")
 	flag.Parse()
 }
 
@@ -102,6 +104,10 @@ func main() {
 			}
 			if ipv4mask {
 				fmt.Printf("%s\n", i.IPv4Mask)
+				return
+			}
+			if ipv4network {
+				fmt.Printf("%s\n", i.IPv4Network)
 				return
 			}
 			fmt.Printf(i.String())
