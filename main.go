@@ -14,7 +14,7 @@ import (
 
 const (
 	// Version of current release
-	Version           = "v0.2.0"
+	Version           = "v0.2.1"
 	opSys             = runtime.GOOS
 	win               = "windows"
 	linux             = "linux"
@@ -27,7 +27,7 @@ const (
 	mtuHeader         = "MTU"
 	macHeader         = "MAC Address"
 	ipv6AddrHeader    = "IPv6 Address"
-	windowsString     = "%-35s  %-15s  %-15s  %-18s  %-5s  %-23s  %s\n"
+	windowsString     = "%-35s  %-15s  %-15s  %-18s  %-5s  %-17s  %s\n"
 	linuxString       = "%-10s  %-15s  %-15s  %-18s  %-5s  %-17s  %s\n"
 	darwinString      = "%-10s  %-15s  %-15s  %-18s  %-5s  %-17s  %s\n"
 )
@@ -86,10 +86,7 @@ func main() {
 	}
 
 	if interfaces {
-		// fmt.Println(availableIfaces())
-		for _, i := range availableIfaces() {
-			fmt.Println(i)
-		}
+		fmt.Println(availableIfaces())
 		return
 	}
 
@@ -201,7 +198,7 @@ func getIfaces(loopback bool, filter string) (ifaces []net.Interface) {
 			l = int(iface.Flags & net.FlagLoopback)
 		}
 		// does the interface pass the filter?
-		matched, err := regexp.MatchString("(?i)"+filter, iface.Name)
+		matched, err := regexp.MatchString(filter, iface.Name)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -219,13 +216,14 @@ func getIfaces(loopback bool, filter string) (ifaces []net.Interface) {
 	return
 }
 
-func availableIfaces() (a []string) {
+func availableIfaces() string {
+	var availIfaces []string
 	ifaces, err := net.Interfaces()
 	if err != nil {
 		log.Fatal(err)
 	}
 	for _, iface := range ifaces {
-		a = append(a, iface.Name)
+		availIfaces = append(availIfaces, iface.Name)
 	}
-	return
+	return strings.Join(availIfaces, ", ")
 }
