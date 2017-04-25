@@ -14,7 +14,7 @@ import (
 
 const (
 	// Version of current release
-	Version           = "v0.1.4"
+	Version           = "v0.2.0"
 	opSys             = runtime.GOOS
 	win               = "windows"
 	linux             = "linux"
