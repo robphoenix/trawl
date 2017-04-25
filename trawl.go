@@ -30,20 +30,24 @@ func New(iface net.Interface) (*Interface, error) {
 	ipv4, ipv6 := extractAddrs(addrs)
 
 	// get IPv4 address and network
-	var ipv4Addr net.IP
-	var ipv4Network *net.IPNet
+	var v4Addr, v4Mask, v4Net string
 	if len(ipv4) > 0 {
-		ipv4Addr, ipv4Network, err = net.ParseCIDR(ipv4)
+		addr, network, err := net.ParseCIDR(ipv4)
 		if err != nil {
 			log.Fatal(err)
+		}
+		if addr != nil {
+			v4Addr = addr.String()
+			v4Mask = toDottedDec(network.Mask)
+			v4Net = network.String()
 		}
 	}
 
 	return &Interface{
 		HardwareAddr: iface.HardwareAddr.String(),
-		IPv4Addr:     ipv4Addr.String(),
-		IPv4Mask:     toDottedDec(ipv4Network.Mask),
-		IPv4Network:  ipv4Network.String(),
+		IPv4Addr:     v4Addr,
+		IPv4Mask:     v4Mask,
+		IPv4Network:  v4Net,
 		IPv6Addr:     ipv6,
 		MTU:          strconv.Itoa(iface.MTU),
 		Name:         iface.Name,
