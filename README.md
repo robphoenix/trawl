@@ -66,7 +66,7 @@ tun0        10.8.8.25        255.255.255.0    10.8.8.0/24         1500   -      
 
 Trawl has a number of flags if you want to be more specific:
 
-You can filter the interface names with a regular expression.
+You can filter the interface names with a case insensitive regular expression.
 
 ```sh
 $ trawl -f w
@@ -143,7 +143,7 @@ Teredo Tunneling Pseudo-Interface    -                -                -        
 ```
 
 ```cmd
-% trawl -f Wi
+% trawl -f wi
 Wireless Network Connection          10.26.101.28     255.255.255.0    10.26.101.0/24      1500   24:77:03:c1:7e:2c        fe80::48e8:96c3:7457:8a3d/64
 % trawl -a "Wireless Network Connection"
 10.26.101.28

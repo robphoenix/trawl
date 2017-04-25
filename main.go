@@ -201,7 +201,7 @@ func getIfaces(loopback bool, filter string) (ifaces []net.Interface) {
 			l = int(iface.Flags & net.FlagLoopback)
 		}
 		// does the interface pass the filter?
-		matched, err := regexp.MatchString(filter, iface.Name)
+		matched, err := regexp.MatchString("(?i)"+filter, iface.Name)
 		if err != nil {
 			log.Fatal(err)
 		}
