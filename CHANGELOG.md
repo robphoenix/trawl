@@ -1,5 +1,18 @@
 # Change Log
 
+## [v0.2.1](https://github.com/robphoenix/trawl/tree/v0.2.1) (2017-04-25)
+[Full Changelog](https://github.com/robphoenix/trawl/compare/v0.2.0...v0.2.1)
+
+**Bug Fixes**
+
+- make filter case insensitive
+- list interfaces with \n instead of ,
+- fix irregular windows output
+
+**Closed issues:**
+
+- fix Windows build [\#13](https://github.com/robphoenix/trawl/issues/13)
+
 ## [v0.2.0](https://github.com/robphoenix/trawl/tree/v0.2.0) (2017-04-25)
 [Full Changelog](https://github.com/robphoenix/trawl/compare/v0.1.4...v0.2.0)
 
