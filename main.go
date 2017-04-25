@@ -27,7 +27,7 @@ const (
 	mtuHeader         = "MTU"
 	macHeader         = "MAC Address"
 	ipv6AddrHeader    = "IPv6 Address"
-	windowsString     = "%-35s  %-15s  %-15s  %-18s  %-5s  %-17s  %s\n"
+	windowsString     = "%-35s  %-15s  %-15s  %-18s  %-5s  %-23s  %s\n"
 	linuxString       = "%-10s  %-15s  %-15s  %-18s  %-5s  %-17s  %s\n"
 	darwinString      = "%-10s  %-15s  %-15s  %-18s  %-5s  %-17s  %s\n"
 )
