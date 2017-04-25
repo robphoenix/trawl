@@ -86,7 +86,10 @@ func main() {
 	}
 
 	if interfaces {
-		fmt.Println(availableIfaces())
+		// fmt.Println(availableIfaces())
+		for _, i := range availableIfaces() {
+			fmt.Println(i)
+		}
 		return
 	}
 
@@ -216,14 +219,13 @@ func getIfaces(loopback bool, filter string) (ifaces []net.Interface) {
 	return
 }
 
-func availableIfaces() string {
-	var availIfaces []string
+func availableIfaces() (a []string) {
 	ifaces, err := net.Interfaces()
 	if err != nil {
 		log.Fatal(err)
 	}
 	for _, iface := range ifaces {
-		availIfaces = append(availIfaces, iface.Name)
+		a = append(a, iface.Name)
 	}
-	return strings.Join(availIfaces, ", ")
+	return
 }
