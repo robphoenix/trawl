@@ -1,7 +1,0 @@
-{
-    "dependencies": {
-        "github.com/rdegges/go-ipify": {
-            "branch": "master"
-        }
-    }
-}

@@ -1,0 +1,3 @@
+[[dependencies]]
+  branch = "master"
+  name = "github.com/rdegges/go-ipify"

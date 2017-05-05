@@ -1,0 +1,13 @@
+memo = "45d187df7db11a10d75048bf52dc5bc23f96163abd9dca1775b1f2fead9e5be9"
+
+[[projects]]
+  branch = "master"
+  name = "github.com/jpillora/backoff"
+  packages = ["."]
+  revision = "06c7a16c845dc8e0bf575fafeeca0f5462f5eb4d"
+
+[[projects]]
+  branch = "master"
+  name = "github.com/rdegges/go-ipify"
+  packages = ["."]
+  revision = "2d94a6a86c4055118cc30fae2aaed47ec01f2210"
