@@ -8,8 +8,8 @@ import (
 	"strings"
 )
 
-// Interface provides the information for a device interface
-type Interface struct {
+// Iface provides the information for a device interface
+type Iface struct {
 	HardwareAddr string
 	IPv4Addr     string
 	IPv4Mask     string
@@ -19,11 +19,11 @@ type Interface struct {
 	Name         string
 }
 
-// New instantiates an Interface object representing a device interface
-func New(iface net.Interface) (*Interface, error) {
+// New instantiates an Iface object representing a device interface
+func New(iface net.Interface) (*Iface, error) {
 	addrs, err := iface.Addrs()
 	if err != nil {
-		return &Interface{}, err
+		return &Iface{}, err
 	}
 
 	// we can't rely on the order of the addresses in the addrs array
@@ -43,7 +43,7 @@ func New(iface net.Interface) (*Interface, error) {
 		}
 	}
 
-	return &Interface{
+	return &Iface{
 		HardwareAddr: iface.HardwareAddr.String(),
 		IPv4Addr:     v4Addr,
 		IPv4Mask:     v4Mask,
@@ -61,7 +61,7 @@ func setMissingValue(s string) string {
 	return s
 }
 
-func (iface *Interface) String() string {
+func (iface *Iface) String() string {
 	ifaceString := osString()
 	return fmt.Sprintf(
 		ifaceString,
