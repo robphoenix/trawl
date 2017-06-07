@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	"net"
 	"strconv"
@@ -54,27 +53,6 @@ func New(netIface net.Interface) (*Iface, error) {
 		MTU:          strconv.Itoa(netIface.MTU),
 		Name:         netIface.Name,
 	}, nil
-}
-
-func setMissingValue(s string) string {
-	if s == "" {
-		return "-"
-	}
-	return s
-}
-
-func (iface *Iface) String() string {
-	ifaceString := osString()
-	return fmt.Sprintf(
-		ifaceString,
-		iface.Name,
-		setMissingValue(iface.IPv4Addr),
-		setMissingValue(iface.IPv4Mask),
-		setMissingValue(iface.IPv4Network),
-		setMissingValue(iface.MTU),
-		setMissingValue(iface.HardwareAddr),
-		setMissingValue(iface.IPv6Addr),
-	)
 }
 
 func extractAddrs(addrs []net.Addr) (ipv4, ipv6 string) {

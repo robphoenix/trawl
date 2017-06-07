@@ -6,7 +6,6 @@ import (
 	"log"
 	"net"
 	"regexp"
-	"runtime"
 	"strings"
 
 	"github.com/rdegges/go-ipify"
@@ -15,10 +14,6 @@ import (
 const (
 	// Version of current release
 	Version           = "v0.2.1"
-	opSys             = runtime.GOOS
-	win               = "windows"
-	linux             = "linux"
-	darwin            = "darwin"
 	underlineChar     = "-"
 	nameHeader        = "Name"
 	ipv4AddrHeader    = "IPv4 Address"
@@ -27,9 +22,7 @@ const (
 	mtuHeader         = "MTU"
 	macHeader         = "MAC Address"
 	ipv6AddrHeader    = "IPv6 Address"
-	windowsString     = "%-35s  %-15s  %-15s  %-18s  %-5s  %-17s  %s\n"
-	linuxString       = "%-10s  %-15s  %-15s  %-18s  %-5s  %-17s  %s\n"
-	darwinString      = "%-10s  %-15s  %-15s  %-18s  %-5s  %-17s  %s\n"
+	outputString      = "%-*s  %-15s  %-15s  %-18s  %-5s  %-17s  %s\n"
 )
 
 var (
@@ -125,24 +118,35 @@ func main() {
 				fmt.Printf("%s\n", i.IPv6Addr)
 				return
 			}
+			maxLen := len(i.Name)
 			if names {
-				printHeaders()
+				fmt.Printf(headerString(maxLen))
 			}
-			fmt.Printf(i.String())
+			fmt.Printf(ifaceString(maxLen, i))
 		}
 		return
 	}
 
-	if names {
-		printHeaders()
-	}
+	var maxLen int
+	var ifs []*Iface
 
 	for _, iface := range getIfaces(loopback, filter) {
 		i, err := New(iface)
 		if err != nil {
 			log.Fatal(err)
 		}
-		fmt.Printf(i.String())
+		ifs = append(ifs, i)
+		if nameLen := len(i.Name); nameLen > maxLen {
+			maxLen = nameLen
+		}
+	}
+
+	if names {
+		fmt.Printf(headerString(maxLen))
+	}
+
+	for _, i := range ifs {
+		fmt.Printf(ifaceString(maxLen, i))
 	}
 }
 
@@ -150,22 +154,11 @@ func underline(s string) string {
 	return strings.Repeat(underlineChar, len(s))
 }
 
-func osString() (s string) {
-	switch opSys {
-	case win:
-		s = windowsString
-	case linux:
-		s = linuxString
-	case darwin:
-		s = darwinString
-	}
-	return
-}
-
-func printHeaders() {
-	headersString := osString()
-	fmt.Printf(
-		headersString,
+func headerString(l int) string {
+	var s string
+	s += fmt.Sprintf(
+		outputString,
+		l,
 		nameHeader,
 		ipv4AddrHeader,
 		ipv4MaskHeader,
@@ -174,8 +167,9 @@ func printHeaders() {
 		macHeader,
 		ipv6AddrHeader,
 	)
-	fmt.Printf(
-		headersString,
+	s += fmt.Sprintf(
+		outputString,
+		l,
 		underline(nameHeader),
 		underline(ipv4AddrHeader),
 		underline(ipv4MaskHeader),
@@ -183,6 +177,21 @@ func printHeaders() {
 		underline(mtuHeader),
 		underline(macHeader),
 		underline(ipv6AddrHeader),
+	)
+	return s
+}
+
+func ifaceString(l int, i *Iface) string {
+	return fmt.Sprintf(
+		outputString,
+		l,
+		setMissingValue(i.Name),
+		setMissingValue(i.IPv4Addr),
+		setMissingValue(i.IPv4Mask),
+		setMissingValue(i.IPv4Network),
+		setMissingValue(i.MTU),
+		setMissingValue(i.HardwareAddr),
+		setMissingValue(i.IPv6Addr),
 	)
 }
 
@@ -227,4 +236,11 @@ func availableIfaces() string {
 		availIfaces = append(availIfaces, iface.Name)
 	}
 	return strings.Join(availIfaces, ", ")
+}
+
+func setMissingValue(s string) string {
+	if s == "" {
+		return "-"
+	}
+	return s
 }
