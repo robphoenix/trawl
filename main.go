@@ -186,7 +186,8 @@ func printHeaders() {
 	)
 }
 
-func getIfaces(loopback bool, filter string) (ifaces []net.Interface) {
+func getIfaces(loopback bool, filter string) []net.Interface {
+	var ifaces []net.Interface
 	allIfaces, err := net.Interfaces()
 	if err != nil {
 		log.Fatal(err)
@@ -213,7 +214,7 @@ func getIfaces(loopback bool, filter string) (ifaces []net.Interface) {
 			ifaces = append(ifaces, iface)
 		}
 	}
-	return
+	return ifaces
 }
 
 func availableIfaces() string {
