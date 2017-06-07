@@ -19,9 +19,11 @@ type Iface struct {
 	Name         string
 }
 
+type mask net.IPMask
+
 // New instantiates an Iface object representing a device interface
-func New(iface net.Interface) (*Iface, error) {
-	addrs, err := iface.Addrs()
+func New(netIface net.Interface) (*Iface, error) {
+	addrs, err := netIface.Addrs()
 	if err != nil {
 		return &Iface{}, err
 	}
@@ -38,19 +40,19 @@ func New(iface net.Interface) (*Iface, error) {
 		}
 		if addr != nil {
 			v4Addr = addr.String()
-			v4Mask = toDottedDec(network.Mask)
+			v4Mask = mask(network.Mask).toDottedDec()
 			v4Net = network.String()
 		}
 	}
 
 	return &Iface{
-		HardwareAddr: iface.HardwareAddr.String(),
+		HardwareAddr: netIface.HardwareAddr.String(),
 		IPv4Addr:     v4Addr,
 		IPv4Mask:     v4Mask,
 		IPv4Network:  v4Net,
 		IPv6Addr:     ipv6,
-		MTU:          strconv.Itoa(iface.MTU),
-		Name:         iface.Name,
+		MTU:          strconv.Itoa(netIface.MTU),
+		Name:         netIface.Name,
 	}, nil
 }
 
@@ -88,9 +90,9 @@ func extractAddrs(addrs []net.Addr) (ipv4, ipv6 string) {
 	return
 }
 
-func toDottedDec(mask net.IPMask) string {
-	parts := make([]string, len(mask))
-	for i, part := range mask {
+func (m mask) toDottedDec() string {
+	parts := make([]string, len(m))
+	for i, part := range m {
 		parts[i] = strconv.FormatUint(uint64(part), 10)
 	}
 	return strings.Join(parts, ".")
