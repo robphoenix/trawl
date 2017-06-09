@@ -22,7 +22,7 @@ const (
 	mtuHeader         = "MTU"
 	macHeader         = "MAC Address"
 	ipv6AddrHeader    = "IPv6 Address"
-	outputString      = "%-*s  %-15s  %-15s  %-18s  %-5s  %-23s  %s\n"
+	outputString      = "%-*s  %-*s  %-*s  %-*s  %-*s  %-*s  %s\n"
 )
 
 var (
@@ -39,6 +39,15 @@ var (
 	hwAddress   bool
 	ipv6address bool
 )
+
+type fieldLengths struct {
+	name int
+	addr int
+	mask int
+	net  int
+	mtu  int
+	mac  int
+}
 
 func init() {
 	flag.BoolVar(&version, "version", false, "print version and exit")
@@ -118,16 +127,23 @@ func main() {
 				fmt.Printf("%s\n", i.IPv6Addr)
 				return
 			}
-			maxLen := len(i.Name)
-			if names {
-				fmt.Printf(headerString(maxLen))
+			fl := fieldLengths{
+				len(i.Name),
+				len(i.IPv4Addr),
+				len(i.IPv4Mask),
+				len(i.IPv4Network),
+				len(i.MTU),
+				len(i.HardwareAddr),
 			}
-			fmt.Printf(ifaceString(maxLen, i))
+			if names {
+				fmt.Printf(headerString(fl))
+			}
+			fmt.Printf(ifaceString(fl, i))
 		}
 		return
 	}
 
-	var maxLen int
+	var fl fieldLengths
 	var ifs []*Iface
 
 	for _, iface := range getIfaces(loopback, filter) {
@@ -136,17 +152,20 @@ func main() {
 			log.Fatal(err)
 		}
 		ifs = append(ifs, i)
-		if nameLen := len(i.Name); nameLen > maxLen {
-			maxLen = nameLen
-		}
+		fl.name = maxLen(fl.name, len(i.Name))
+		fl.addr = maxLen(fl.addr, len(i.IPv4Addr))
+		fl.mask = maxLen(fl.mask, len(i.IPv4Mask))
+		fl.net = maxLen(fl.net, len(i.IPv4Network))
+		fl.mtu = maxLen(fl.mtu, len(i.MTU))
+		fl.mac = maxLen(fl.mac, len(i.HardwareAddr))
 	}
 
 	if names {
-		fmt.Printf(headerString(maxLen))
+		fmt.Printf(headerString(fl))
 	}
 
 	for _, i := range ifs {
-		fmt.Printf(ifaceString(maxLen, i))
+		fmt.Printf(ifaceString(fl, i))
 	}
 }
 
@@ -154,42 +173,64 @@ func underline(s string) string {
 	return strings.Repeat(underlineChar, len(s))
 }
 
-func headerString(l int) string {
+func maxLen(m, l int) int {
+	if l > m {
+		return l
+	}
+	return m
+}
+
+func headerString(fl fieldLengths) string {
 	var s string
 	s += fmt.Sprintf(
 		outputString,
-		l,
+		fl.name,
 		nameHeader,
+		fl.addr,
 		ipv4AddrHeader,
+		fl.mask,
 		ipv4MaskHeader,
+		fl.net,
 		ipv4NetworkHeader,
+		fl.mtu,
 		mtuHeader,
+		fl.mac,
 		macHeader,
 		ipv6AddrHeader,
 	)
 	s += fmt.Sprintf(
 		outputString,
-		l,
+		fl.name,
 		underline(nameHeader),
+		fl.addr,
 		underline(ipv4AddrHeader),
+		fl.mask,
 		underline(ipv4MaskHeader),
+		fl.net,
 		underline(ipv4NetworkHeader),
+		fl.mtu,
 		underline(mtuHeader),
+		fl.mac,
 		underline(macHeader),
 		underline(ipv6AddrHeader),
 	)
 	return s
 }
 
-func ifaceString(l int, i *Iface) string {
+func ifaceString(fl fieldLengths, i *Iface) string {
 	return fmt.Sprintf(
 		outputString,
-		l,
+		fl.name,
 		setMissingValue(i.Name),
+		fl.addr,
 		setMissingValue(i.IPv4Addr),
+		fl.mask,
 		setMissingValue(i.IPv4Mask),
+		fl.net,
 		setMissingValue(i.IPv4Network),
+		fl.mtu,
 		setMissingValue(i.MTU),
+		fl.mac,
 		setMissingValue(i.HardwareAddr),
 		setMissingValue(i.IPv6Addr),
 	)
