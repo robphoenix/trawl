@@ -22,7 +22,7 @@ const (
 	mtuHeader         = "MTU"
 	macHeader         = "MAC Address"
 	ipv6AddrHeader    = "IPv6 Address"
-	outputString      = "%-*s  %-15s  %-15s  %-18s  %-5s  %-17s  %s\n"
+	outputString      = "%-*s  %-15s  %-15s  %-18s  %-5s  %-23s  %s\n"
 )
 
 var (
