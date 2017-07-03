@@ -1,11 +1,14 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"net"
 	"strconv"
 	"strings"
 )
+
+type mask net.IPMask
 
 // Iface provides the information for a device interface
 type Iface struct {
@@ -18,10 +21,20 @@ type Iface struct {
 	Name         string
 }
 
-type mask net.IPMask
+func (i *Iface) String() string {
+	return fmt.Sprintf("%s\t%s\t%s\t%s\t%s\t%s\t%s",
+		i.Name,
+		i.IPv4Addr,
+		i.IPv4Mask,
+		i.IPv4Network,
+		i.MTU,
+		i.HardwareAddr,
+		i.IPv6Addr,
+	)
+}
 
-// New instantiates an Iface object representing a device interface
-func New(netIface net.Interface) (*Iface, error) {
+// NewIface instantiates an Iface object representing a device interface
+func NewIface(netIface net.Interface) (*Iface, error) {
 	addrs, err := netIface.Addrs()
 	if err != nil {
 		return &Iface{}, err
@@ -74,4 +87,51 @@ func (m mask) toDottedDec() string {
 		parts[i] = strconv.FormatUint(uint64(part), 10)
 	}
 	return strings.Join(parts, ".")
+}
+
+type headers struct {
+	underlineChar string
+	name          string
+	ipv4Addr      string
+	ipv4Mask      string
+	ipv4Network   string
+	mtu           string
+	mac           string
+	ipv6Addr      string
+}
+
+func (h *headers) String() string {
+	s := "%s\t%s\t%s\t%s\t%s\t%s\t%s"
+	return fmt.Sprintf(s+"\n"+s,
+		h.name,
+		h.ipv4Addr,
+		h.ipv4Mask,
+		h.ipv4Network,
+		h.mtu,
+		h.mac,
+		h.ipv6Addr,
+		underline(h.name),
+		underline(h.ipv4Addr),
+		underline(h.ipv4Mask),
+		underline(h.ipv4Network),
+		underline(h.mtu),
+		underline(h.mac),
+		underline(h.ipv6Addr),
+	)
+}
+
+func newHeaders() *headers {
+	return &headers{
+		ipv4Addr:    "IPv4 Address",
+		ipv6Addr:    "IPv6 Address",
+		ipv4Mask:    "IPv4 Mask",
+		ipv4Network: "IPv4 Network",
+		mac:         "MAC Address",
+		mtu:         "MTU",
+		name:        "Name",
+	}
+}
+
+func underline(s string) string {
+	return strings.Repeat("-", len(s))
 }
