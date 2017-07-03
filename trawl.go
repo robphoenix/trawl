@@ -23,13 +23,13 @@ type Iface struct {
 
 func (i *Iface) String() string {
 	return fmt.Sprintf("%s\t%s\t%s\t%s\t%s\t%s\t%s",
-		i.Name,
-		i.IPv4Addr,
-		i.IPv4Mask,
-		i.IPv4Network,
-		i.MTU,
-		i.HardwareAddr,
-		i.IPv6Addr,
+		setMissingValue(i.Name),
+		setMissingValue(i.IPv4Addr),
+		setMissingValue(i.IPv4Mask),
+		setMissingValue(i.IPv4Network),
+		setMissingValue(i.MTU),
+		setMissingValue(i.HardwareAddr),
+		setMissingValue(i.IPv6Addr),
 	)
 }
 
@@ -90,14 +90,14 @@ func (m mask) toDottedDec() string {
 }
 
 type headers struct {
-	underlineChar string
-	name          string
 	ipv4Addr      string
 	ipv4Mask      string
 	ipv4Network   string
+	ipv6Addr      string
 	mtu           string
 	mac           string
-	ipv6Addr      string
+	name          string
+	underlineChar string
 }
 
 func (h *headers) String() string {
@@ -110,28 +110,36 @@ func (h *headers) String() string {
 		h.mtu,
 		h.mac,
 		h.ipv6Addr,
-		underline(h.name),
-		underline(h.ipv4Addr),
-		underline(h.ipv4Mask),
-		underline(h.ipv4Network),
-		underline(h.mtu),
-		underline(h.mac),
-		underline(h.ipv6Addr),
+		underline(h.name, h.underlineChar),
+		underline(h.ipv4Addr, h.underlineChar),
+		underline(h.ipv4Mask, h.underlineChar),
+		underline(h.ipv4Network, h.underlineChar),
+		underline(h.mtu, h.underlineChar),
+		underline(h.mac, h.underlineChar),
+		underline(h.ipv6Addr, h.underlineChar),
 	)
 }
 
 func newHeaders() *headers {
 	return &headers{
-		ipv4Addr:    "IPv4 Address",
-		ipv6Addr:    "IPv6 Address",
-		ipv4Mask:    "IPv4 Mask",
-		ipv4Network: "IPv4 Network",
-		mac:         "MAC Address",
-		mtu:         "MTU",
-		name:        "Name",
+		ipv4Addr:      "IPv4 Address",
+		ipv6Addr:      "IPv6 Address",
+		ipv4Mask:      "IPv4 Mask",
+		ipv4Network:   "IPv4 Network",
+		mac:           "MAC Address",
+		mtu:           "MTU",
+		name:          "Name",
+		underlineChar: "-",
 	}
 }
 
-func underline(s string) string {
-	return strings.Repeat("-", len(s))
+func setMissingValue(s string) string {
+	if s == "" {
+		return "-"
+	}
+	return s
+}
+
+func underline(s, c string) string {
+	return strings.Repeat(c, len(s))
 }
