@@ -63,11 +63,12 @@ func main() {
 	}
 
 	if public {
-		pubIP, err := ipify.GetIp()
+		p, err := ipify.GetIp()
 		if err != nil {
 			log.Fatal(err)
+			return
 		}
-		fmt.Println(pubIP)
+		fmt.Println(p)
 		return
 	}
 
@@ -81,10 +82,12 @@ func main() {
 		iface, err := net.InterfaceByName(args[0])
 		if err != nil {
 			log.Fatal(err)
+			return
 		}
 		i, err := NewIface(*iface)
 		if err != nil {
 			log.Fatal(err)
+			return
 		}
 		if ipv4address {
 			fmt.Printf("%s\n", i.IPv4Addr)
@@ -129,10 +132,10 @@ func main() {
 		i, err := NewIface(iface)
 		if err != nil {
 			log.Fatal(err)
+			return
 		}
 		fmt.Fprintln(w, i)
 	}
-
 	w.Flush()
 }
 
@@ -177,11 +180,4 @@ func availableIfaces() string {
 		availIfaces = append(availIfaces, iface.Name)
 	}
 	return strings.Join(availIfaces, ", ")
-}
-
-func setMissingValue(s string) string {
-	if s == "" {
-		return "-"
-	}
-	return s
 }
