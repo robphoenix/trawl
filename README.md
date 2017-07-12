@@ -98,12 +98,15 @@ $ trawl -p
 All the same functionality is available in Windows
 
 ```cmd
-% trawl
-Local Area Connection 4              169.254.17.182   255.255.0.0      169.254.0.0/16      1500   02:00:4c:4f:4f:50        fe80::6cd7:885:5ae5:11b6/64
-Wireless Network Connection          10.26.101.28     255.255.255.0    10.26.101.0/24      1500   24:77:03:c1:7e:2c        fe80::48e8:96c3:7457:8a3d/64
-VirtualBox Host-Only Network         192.168.56.1     255.255.255.0    192.168.56.0/24     1500   0a:00:27:00:00:1a        fe80::31ac:de12:1d27:fbc9/64
-VirtualBox Host-Only Network #2      10.0.0.1         255.255.0.0      10.0.0.0/16         1500   0a:00:27:00:00:1c        fe80::701e:c603:1aee:597e/64
-Teredo Tunneling Pseudo-Interface    -                -                -                   1280   00:00:00:00:00:00:00:e0  fe80::1cea:232a:c110:463d/64
+% trawl -n
+Name                               IPv4 Address    IPv4 Mask        IPv4 Network     MTU   MAC Address              IPv6 Address
+----                               ------------    ---------        ------------     ---   -----------              ------------
+Local Area Connection 3            10.58.10.6      255.255.255.252  10.58.10.4/30    1500  00:ff:49:4c:23:6f        fe80::9cc6:61a2:9a20:2def/64
+Local Area Connection 4            169.254.17.182  255.255.0.0      169.254.0.0/16   1500  02:00:4c:4f:4f:50        fe80::6cd7:885:5ae5:11b6/64
+Wireless Network Connection        10.26.101.209   255.255.255.0    10.26.101.0/24   1500  24:77:03:c1:7e:2c        fe80::48e8:96c3:7457:8a3d/64
+VirtualBox Host-Only Network       192.168.56.1    255.255.255.0    192.168.56.0/24  1500  0a:00:27:00:00:1a        fe80::31ac:de12:1d27:fbc9/64
+VirtualBox Host-Only Network #2    10.0.0.1        255.255.0.0      10.0.0.0/16      1500  0a:00:27:00:00:1c        fe80::701e:c603:1aee:597e/64
+Teredo Tunneling Pseudo-Interface  -               -                -                1280  00:00:00:00:00:00:00:e0  fe80::3810:1607:f5c5:f5f9/64
 ```
 
 ## Installation
