@@ -56,135 +56,6 @@ func init() {
 	flag.Parse()
 }
 
-func main() {
-
-	if version {
-		fmt.Println(Version)
-		return
-	}
-
-	if public {
-		p, err := ipify.GetIp()
-		if err != nil {
-			log.Fatal(err)
-			return
-		}
-		fmt.Println(p)
-		return
-	}
-
-	if interfaces {
-		fmt.Println(availableIfaces())
-		return
-	}
-
-	args := flag.Args()
-	if len(args) > 0 {
-		iface, err := net.InterfaceByName(args[0])
-		if err != nil {
-			log.Fatal(err)
-			return
-		}
-		i, err := NewIface(*iface)
-		if err != nil {
-			log.Fatal(err)
-			return
-		}
-		if ipv4address {
-			fmt.Printf("%s\n", i.IPv4Addr)
-			return
-		}
-		if ipv4mask {
-			fmt.Printf("%s\n", i.IPv4Mask)
-			return
-		}
-		if ipv4network {
-			fmt.Printf("%s\n", i.IPv4Network)
-			return
-		}
-		if mtu {
-			fmt.Printf("%s\n", i.MTU)
-			return
-		}
-		if hwAddress {
-			fmt.Printf("%s\n", i.HardwareAddr)
-			return
-		}
-		if ipv6address {
-			fmt.Printf("%s\n", i.IPv6Addr)
-			return
-		}
-		w := tabwriter.NewWriter(os.Stdout, 0, 0, 2, ' ', tabwriter.TabIndent)
-		if names {
-			fmt.Fprintln(w, newHeaders())
-		}
-		fmt.Fprintln(w, i)
-		w.Flush()
-		return
-	}
-
-	w := tabwriter.NewWriter(os.Stdout, 0, 0, 2, ' ', tabwriter.TabIndent)
-
-	if names {
-		fmt.Fprintln(w, newHeaders())
-	}
-
-	for _, iface := range getIfaces(loopback, filter) {
-		i, err := NewIface(iface)
-		if err != nil {
-			log.Fatal(err)
-			return
-		}
-		fmt.Fprintln(w, i)
-	}
-	w.Flush()
-}
-
-func getIfaces(loopback bool, filter string) []net.Interface {
-	var ifaces []net.Interface
-	allIfaces, err := net.Interfaces()
-	if err != nil {
-		log.Fatal(err)
-	}
-	for _, iface := range allIfaces {
-		var l int
-		// is it a loopback interface? do we want the loopback interface?
-		if !loopback {
-			l = int(iface.Flags & net.FlagLoopback)
-		}
-		// does the interface pass the filter?
-		matched, err := regexp.MatchString(filter, iface.Name)
-		if err != nil {
-			log.Fatal(err)
-		}
-		// does the interface have any available addresses?
-		addrs, err := iface.Addrs()
-		if err != nil {
-			log.Fatal(err)
-		}
-		// is the interface up?
-		up := iface.Flags & net.FlagUp
-		if up != 0 && l == 0 && matched && len(addrs) > 0 {
-			ifaces = append(ifaces, iface)
-		}
-	}
-	return ifaces
-}
-
-func availableIfaces() string {
-	var availIfaces []string
-	ifaces, err := net.Interfaces()
-	if err != nil {
-		log.Fatal(err)
-	}
-	for _, iface := range ifaces {
-		availIfaces = append(availIfaces, iface.Name)
-	}
-	return strings.Join(availIfaces, ", ")
-}
-
-type mask net.IPMask
-
 // Iface provides the information for a device interface
 type Iface struct {
 	HardwareAddr string
@@ -243,6 +114,136 @@ func NewIface(netIface net.Interface) (*Iface, error) {
 	}, nil
 }
 
+func main() {
+
+	if version {
+		fmt.Println(Version)
+		return
+	}
+
+	if public {
+		p, err := ipify.GetIp()
+		if err != nil {
+			log.Fatal(err)
+			return
+		}
+		fmt.Println(p)
+		return
+	}
+
+	if interfaces {
+		fmt.Println(availableInterfaces())
+		return
+	}
+
+	args := flag.Args()
+	if len(args) > 0 {
+		iface, err := net.InterfaceByName(args[0])
+		if err != nil {
+			log.Fatal(err)
+			return
+		}
+		i, err := NewIface(*iface)
+		if err != nil {
+			log.Fatal(err)
+			return
+		}
+		if ipv4address {
+			fmt.Printf("%s\n", i.IPv4Addr)
+			return
+		}
+		if ipv4mask {
+			fmt.Printf("%s\n", i.IPv4Mask)
+			return
+		}
+		if ipv4network {
+			fmt.Printf("%s\n", i.IPv4Network)
+			return
+		}
+		if mtu {
+			fmt.Printf("%s\n", i.MTU)
+			return
+		}
+		if hwAddress {
+			fmt.Printf("%s\n", i.HardwareAddr)
+			return
+		}
+		if ipv6address {
+			fmt.Printf("%s\n", i.IPv6Addr)
+			return
+		}
+		w := tabwriter.NewWriter(os.Stdout, 0, 0, 2, ' ', tabwriter.TabIndent)
+		if names {
+			fmt.Fprintln(w, newHeaders())
+		}
+		fmt.Fprintln(w, i)
+		w.Flush()
+		return
+	}
+
+	w := tabwriter.NewWriter(os.Stdout, 0, 0, 2, ' ', tabwriter.TabIndent)
+
+	if names {
+		fmt.Fprintln(w, newHeaders())
+	}
+
+	for _, iface := range validInterfaces(loopback, filter) {
+		i, err := NewIface(iface)
+		if err != nil {
+			log.Fatal(err)
+			return
+		}
+		fmt.Fprintln(w, i)
+	}
+	w.Flush()
+}
+
+func validInterfaces(loopback bool, filter string) []net.Interface {
+	var valid []net.Interface
+	all, err := net.Interfaces()
+	if err != nil {
+		log.Fatal(err)
+	}
+	for _, iface := range all {
+		var l int
+		// is it a loopback interface? do we want the loopback interface?
+		if !loopback {
+			l = int(iface.Flags & net.FlagLoopback)
+		}
+		// does the interface pass the filter?
+		matched, err := regexp.MatchString(filter, iface.Name)
+		if err != nil {
+			log.Fatal(err)
+		}
+		// does the interface have any available addresses?
+		addrs, err := iface.Addrs()
+		if err != nil {
+			log.Fatal(err)
+		}
+		// is the interface up?
+		up := iface.Flags & net.FlagUp
+		if up != 0 && l == 0 && matched && len(addrs) > 0 {
+			valid = append(valid, iface)
+		}
+	}
+	return valid
+}
+
+func availableInterfaces() string {
+	var ifs []string
+	all, err := net.Interfaces()
+	if err != nil {
+		log.Fatal(err)
+	}
+	for _, iface := range all {
+		ifs = append(ifs, iface.Name)
+	}
+	return strings.Join(ifs, ", ")
+}
+
+// TODO: revert this
+type mask net.IPMask
+
 func extractAddrs(addrs []net.Addr) (ipv4, ipv6 string) {
 	for _, addr := range addrs {
 		a := addr.String()
@@ -264,6 +265,7 @@ func (m mask) toDottedDec() string {
 	return strings.Join(parts, ".")
 }
 
+// TODO: just put all this in a function
 type headers struct {
 	ipv4Addr      string
 	ipv4Mask      string
