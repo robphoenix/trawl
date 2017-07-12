@@ -21,18 +21,18 @@ const (
 )
 
 var (
-	version     bool
-	public      bool
-	names       bool
-	loopback    bool
-	interfaces  bool
-	filter      string
-	ipv4address bool
-	ipv4mask    bool
-	ipv4network bool
-	mtu         bool
-	hwAddress   bool
-	ipv6address bool
+	version  bool
+	public   bool
+	names    bool
+	loopback bool
+	ifaces   bool
+	filter   string
+	v4addr   bool
+	v4mask   bool
+	v4net    bool
+	mtu      bool
+	mac      bool
+	v6addr   bool
 )
 
 func init() {
@@ -44,16 +44,16 @@ func init() {
 	flag.BoolVar(&names, "n", false, "print header names (shorthand)")
 	flag.BoolVar(&loopback, "loopback", false, "include loopback interface in output")
 	flag.BoolVar(&loopback, "l", false, "include loopback interface in output (shorthand)")
-	flag.BoolVar(&interfaces, "interfaces", false, "list available interfaces")
-	flag.BoolVar(&interfaces, "i", false, "list available interfaces (shorthand)")
+	flag.BoolVar(&ifaces, "interfaces", false, "list available interfaces")
+	flag.BoolVar(&ifaces, "i", false, "list available interfaces (shorthand)")
 	flag.StringVar(&filter, "filter", "", "filter interface names with a regular expression")
 	flag.StringVar(&filter, "f", "", "filter interface names with a regular expression (shorthand)")
-	flag.BoolVar(&ipv4address, "a", false, "print only IPv4 address, requires interface name")
-	flag.BoolVar(&ipv4mask, "m", false, "print only IPv4 subnet mask, requires interface name")
-	flag.BoolVar(&ipv4network, "s", false, "print only IPv4 network (subnet), requires interface name")
+	flag.BoolVar(&v4addr, "a", false, "print only IPv4 address, requires interface name")
+	flag.BoolVar(&v4mask, "m", false, "print only IPv4 subnet mask, requires interface name")
+	flag.BoolVar(&v4net, "s", false, "print only IPv4 network (subnet), requires interface name")
 	flag.BoolVar(&mtu, "u", false, "print only MTU, requires interface name")
-	flag.BoolVar(&hwAddress, "hw", false, "print only MAC address (hardware address), requires interface name")
-	flag.BoolVar(&ipv6address, "6a", false, "print only IPv6 address, requires interface name")
+	flag.BoolVar(&mac, "hw", false, "print only MAC address (hardware address), requires interface name")
+	flag.BoolVar(&v6addr, "6a", false, "print only IPv6 address, requires interface name")
 	flag.Parse()
 }
 
@@ -132,7 +132,7 @@ func main() {
 		return
 	}
 
-	if interfaces {
+	if ifaces {
 		fmt.Println(availableInterfaces())
 		return
 	}
@@ -149,15 +149,15 @@ func main() {
 			log.Fatal(err)
 			return
 		}
-		if ipv4address {
+		if v4addr {
 			fmt.Printf("%s\n", i.IPv4Addr)
 			return
 		}
-		if ipv4mask {
+		if v4mask {
 			fmt.Printf("%s\n", i.IPv4Mask)
 			return
 		}
-		if ipv4network {
+		if v4net {
 			fmt.Printf("%s\n", i.IPv4Network)
 			return
 		}
@@ -165,11 +165,11 @@ func main() {
 			fmt.Printf("%s\n", i.MTU)
 			return
 		}
-		if hwAddress {
+		if mac {
 			fmt.Printf("%s\n", i.HardwareAddr)
 			return
 		}
-		if ipv6address {
+		if v6addr {
 			fmt.Printf("%s\n", i.IPv6Addr)
 			return
 		}
