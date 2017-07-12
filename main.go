@@ -199,6 +199,18 @@ func main() {
 	w.Flush()
 }
 
+func availableInterfaces() string {
+	var ifs []string
+	all, err := net.Interfaces()
+	if err != nil {
+		log.Fatal(err)
+	}
+	for _, iface := range all {
+		ifs = append(ifs, iface.Name)
+	}
+	return strings.Join(ifs, ", ")
+}
+
 func validInterfaces(loopback bool, filter string) []net.Interface {
 	var valid []net.Interface
 	all, err := net.Interfaces()
@@ -228,18 +240,6 @@ func validInterfaces(loopback bool, filter string) []net.Interface {
 		}
 	}
 	return valid
-}
-
-func availableInterfaces() string {
-	var ifs []string
-	all, err := net.Interfaces()
-	if err != nil {
-		log.Fatal(err)
-	}
-	for _, iface := range all {
-		ifs = append(ifs, iface.Name)
-	}
-	return strings.Join(ifs, ", ")
 }
 
 func extractAddrs(addrs []net.Addr) (ipv4, ipv6 string) {
