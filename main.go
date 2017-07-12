@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"flag"
 	"fmt"
 	"log"
@@ -184,7 +185,7 @@ func main() {
 	w := tabwriter.NewWriter(os.Stdout, 0, 0, 2, ' ', tabwriter.TabIndent)
 
 	if names {
-		fmt.Fprintln(w, newHeaders())
+		fmt.Fprintln(w, tabbedNames())
 	}
 
 	for _, iface := range validInterfaces(loopback, filter) {
@@ -265,51 +266,6 @@ func (m mask) toDottedDec() string {
 	return strings.Join(parts, ".")
 }
 
-// TODO: just put all this in a function
-type headers struct {
-	ipv4Addr      string
-	ipv4Mask      string
-	ipv4Network   string
-	ipv6Addr      string
-	mtu           string
-	mac           string
-	name          string
-	underlineChar string
-}
-
-func (h *headers) String() string {
-	s := "%s\t%s\t%s\t%s\t%s\t%s\t%s"
-	return fmt.Sprintf(s+"\n"+s,
-		h.name,
-		h.ipv4Addr,
-		h.ipv4Mask,
-		h.ipv4Network,
-		h.mtu,
-		h.mac,
-		h.ipv6Addr,
-		underline(h.name, h.underlineChar),
-		underline(h.ipv4Addr, h.underlineChar),
-		underline(h.ipv4Mask, h.underlineChar),
-		underline(h.ipv4Network, h.underlineChar),
-		underline(h.mtu, h.underlineChar),
-		underline(h.mac, h.underlineChar),
-		underline(h.ipv6Addr, h.underlineChar),
-	)
-}
-
-func newHeaders() *headers {
-	return &headers{
-		ipv4Addr:      "IPv4 Address",
-		ipv6Addr:      "IPv6 Address",
-		ipv4Mask:      "IPv4 Mask",
-		ipv4Network:   "IPv4 Network",
-		mac:           "MAC Address",
-		mtu:           "MTU",
-		name:          "Name",
-		underlineChar: "-",
-	}
-}
-
 func setMissingValue(s string) string {
 	if s == "" {
 		return "-"
@@ -317,6 +273,29 @@ func setMissingValue(s string) string {
 	return s
 }
 
-func underline(s, c string) string {
-	return strings.Repeat(c, len(s))
+func tabbedNames() string {
+	ns := []string{
+		"Name",
+		"IPv4 Address",
+		"IPv4 Mask",
+		"IPv4 Network",
+		"MTU",
+		"MAC Address",
+		"IPv6 Address",
+	}
+	var buf bytes.Buffer
+	for i, s := range ns {
+		buf.WriteString(s)
+		if i < len(ns)-1 {
+			buf.WriteString("\t")
+		}
+	}
+	buf.WriteString("\n")
+	for i, s := range ns {
+		buf.WriteString(strings.Repeat("-", len(s)))
+		if i < len(ns)-1 {
+			buf.WriteString("\t")
+		}
+	}
+	return buf.String()
 }
