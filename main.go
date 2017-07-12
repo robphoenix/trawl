@@ -80,8 +80,8 @@ func (i *Iface) String() string {
 	)
 }
 
-// NewIface instantiates an Iface object representing a device interface
-func NewIface(netIface net.Interface) (*Iface, error) {
+// New instantiates an Iface object representing a device interface
+func New(netIface net.Interface) (*Iface, error) {
 	addrs, err := netIface.Addrs()
 	if err != nil {
 		return &Iface{}, err
@@ -99,7 +99,7 @@ func NewIface(netIface net.Interface) (*Iface, error) {
 		}
 		if addr != nil {
 			v4Addr = addr.String()
-			v4Mask = mask(network.Mask).toDottedDec()
+			v4Mask = toDottedDec(network.Mask)
 			v4Net = network.String()
 		}
 	}
@@ -144,7 +144,7 @@ func main() {
 			log.Fatal(err)
 			return
 		}
-		i, err := NewIface(*iface)
+		i, err := New(*iface)
 		if err != nil {
 			log.Fatal(err)
 			return
@@ -175,7 +175,7 @@ func main() {
 		}
 		w := tabwriter.NewWriter(os.Stdout, 0, 0, 2, ' ', tabwriter.TabIndent)
 		if names {
-			fmt.Fprintln(w, newHeaders())
+			fmt.Fprintln(w, tabbedNames())
 		}
 		fmt.Fprintln(w, i)
 		w.Flush()
@@ -189,7 +189,7 @@ func main() {
 	}
 
 	for _, iface := range validInterfaces(loopback, filter) {
-		i, err := NewIface(iface)
+		i, err := New(iface)
 		if err != nil {
 			log.Fatal(err)
 			return
@@ -242,9 +242,6 @@ func availableInterfaces() string {
 	return strings.Join(ifs, ", ")
 }
 
-// TODO: revert this
-type mask net.IPMask
-
 func extractAddrs(addrs []net.Addr) (ipv4, ipv6 string) {
 	for _, addr := range addrs {
 		a := addr.String()
@@ -258,9 +255,9 @@ func extractAddrs(addrs []net.Addr) (ipv4, ipv6 string) {
 	return
 }
 
-func (m mask) toDottedDec() string {
-	parts := make([]string, len(m))
-	for i, part := range m {
+func toDottedDec(mask net.IPMask) string {
+	parts := make([]string, len(mask))
+	for i, part := range mask {
 		parts[i] = strconv.FormatUint(uint64(part), 10)
 	}
 	return strings.Join(parts, ".")
