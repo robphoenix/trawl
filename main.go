@@ -1,7 +1,6 @@
 package main
 
 import (
-	"bytes"
 	"flag"
 	"fmt"
 	"log"
@@ -284,9 +283,7 @@ func tabbedNames() string {
 	for _, s := range ns {
 		underlined = append(underlined, strings.Repeat("-", len(s)))
 	}
-	var buf bytes.Buffer
-	buf.WriteString(strings.Join(ns, "\t"))
-	buf.WriteString("\n")
-	buf.WriteString(strings.Join(underlined, "\t"))
-	return buf.String()
+	n := strings.Join(ns, "\t")
+	u := strings.Join(underlined, "\t")
+	return n + "\n" + u
 }
