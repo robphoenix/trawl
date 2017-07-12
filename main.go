@@ -280,19 +280,13 @@ func tabbedNames() string {
 		"MAC Address",
 		"IPv6 Address",
 	}
+	var underlined []string
+	for _, s := range ns {
+		underlined = append(underlined, strings.Repeat("-", len(s)))
+	}
 	var buf bytes.Buffer
-	for i, s := range ns {
-		buf.WriteString(s)
-		if i < len(ns)-1 {
-			buf.WriteString("\t")
-		}
-	}
+	buf.WriteString(strings.Join(ns, "\t"))
 	buf.WriteString("\n")
-	for i, s := range ns {
-		buf.WriteString(strings.Repeat("-", len(s)))
-		if i < len(ns)-1 {
-			buf.WriteString("\t")
-		}
-	}
+	buf.WriteString(strings.Join(underlined, "\t"))
 	return buf.String()
 }
