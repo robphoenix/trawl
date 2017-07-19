@@ -172,7 +172,7 @@ func main() {
 			fmt.Printf("%s\n", i.IPv6Addr)
 			return
 		}
-		w := tabwriter.NewWriter(os.Stdout, 0, 0, 2, ' ', tabwriter.TabIndent)
+		w := tabwriter.NewWriter(os.Stdout, 0, 0, 2, ' ', 0)
 		if names {
 			fmt.Fprintln(w, tabbedNames())
 		}
@@ -181,7 +181,7 @@ func main() {
 		return
 	}
 
-	w := tabwriter.NewWriter(os.Stdout, 0, 0, 2, ' ', tabwriter.TabIndent)
+	w := tabwriter.NewWriter(os.Stdout, 0, 0, 2, ' ', 0)
 
 	if names {
 		fmt.Fprintln(w, tabbedNames())
