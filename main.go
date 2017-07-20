@@ -20,21 +20,54 @@ const (
 )
 
 var (
-	version  bool
-	public   bool
-	names    bool
-	loopback bool
-	ifaces   bool
-	filter   string
-	v4addr   bool
-	v4mask   bool
-	v4net    bool
-	mtu      bool
-	mac      bool
-	v6addr   bool
+	version   bool
+	public    bool
+	names     bool
+	loopback  bool
+	ifaces    bool
+	filter    string
+	v4addr    bool
+	v4mask    bool
+	v4net     bool
+	mtu       bool
+	mac       bool
+	v6addr    bool
+	usageText = `Usage: trawl [options...] <interface>
+
+A strong fishing net for dragging along the sea bottom 
+to collect IP addresses and similar flotsam & jetsam.
+
+Options:
+  -version, -v	     print version and exit
+
+  -interfaces, -i    list available interfaces
+
+  -loopback, -l      include loopback interface in output,
+                     loopback is not included by default
+
+  -names, -n         include output column names,
+                     column names are not printed by default
+
+  -public, -p        print only the public IP address
+
+  -filter, -f	     filter, by name, which interfaces are displayed,
+                     using a regular expression
+
+  -a	             print only the IPv4 address, requires interface name
+  -m	             print only the IPv4 subnet mask, requires interface name
+  -s	             print only the IPv4 network (subnet), requires interface name
+  -hw                print only the MAC address (hardware address), requires interface name
+  -u	             print only the MTU, requires interface name
+  -6a                print only the IPv6 address, requires interface name
+`
 )
 
 func init() {
+
+	flag.Usage = func() {
+		fmt.Fprintf(os.Stderr, usageText)
+	}
+
 	flag.BoolVar(&version, "version", false, "print version and exit")
 	flag.BoolVar(&version, "v", false, "print version and exit (shorthand)")
 	flag.BoolVar(&public, "public", false, "print public IP address and exit")
