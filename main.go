@@ -68,7 +68,7 @@ type Iface struct {
 }
 
 func (i *Iface) String() string {
-	return fmt.Sprintf("%s\t%s\t%s\t%s\t%s\t%s\t%s",
+	return fmt.Sprintf("%s\t%s\t%s\t%s\t%s\t%s\t%s\t",
 		setMissingValue(i.Name),
 		setMissingValue(i.IPv4Addr),
 		setMissingValue(i.IPv4Mask),
@@ -285,5 +285,5 @@ func tabbedNames() string {
 	}
 	n := strings.Join(ns, "\t")
 	u := strings.Join(underlined, "\t")
-	return n + "\n" + u
+	return n + "\n" + u + "\t"
 }
