@@ -169,6 +169,9 @@ func main() {
 		return
 	}
 
+	w := tabwriter.NewWriter(os.Stdout, 0, 0, 2, ' ', 0)
+	defer w.Flush()
+
 	args := flag.Args()
 	if len(args) > 0 {
 		iface, err := net.InterfaceByName(args[0])
@@ -205,16 +208,12 @@ func main() {
 			fmt.Printf("%s\n", i.IPv6Addr)
 			return
 		}
-		w := tabwriter.NewWriter(os.Stdout, 0, 0, 2, ' ', 0)
 		if names {
 			fmt.Fprintln(w, tabbedNames())
 		}
 		fmt.Fprintln(w, i)
-		w.Flush()
 		return
 	}
-
-	w := tabwriter.NewWriter(os.Stdout, 0, 0, 2, ' ', 0)
 
 	if names {
 		fmt.Fprintln(w, tabbedNames())
@@ -228,7 +227,6 @@ func main() {
 		}
 		fmt.Fprintln(w, i)
 	}
-	w.Flush()
 }
 
 func availableInterfaces() string {
