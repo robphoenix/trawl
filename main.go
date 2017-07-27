@@ -120,12 +120,12 @@ func New(netIface net.Interface) (*Iface, error) {
 	}
 
 	// we can't rely on the order of the addresses in the addrs array
-	ipv4, ipv6 := extractAddrs(addrs)
+	ipv4s, ipv6s := extractAddrs(addrs)
 
 	// get IPv4 address and network
 	var v4Addr, v4Mask, v4Net string
-	if len(ipv4) > 0 {
-		addr, network, err := net.ParseCIDR(ipv4)
+	if len(ipv4s) > 0 {
+		addr, network, err := net.ParseCIDR(ipv4s[0])
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -134,6 +134,10 @@ func New(netIface net.Interface) (*Iface, error) {
 			v4Mask = toDottedDec(network.Mask)
 			v4Net = network.String()
 		}
+	}
+	var ipv6 string
+	if len(ipv6s) > 0 {
+		ipv6 = ipv6s[0]
 	}
 
 	return &Iface{
@@ -272,14 +276,14 @@ func validInterfaces(loopback bool, filter string) []net.Interface {
 	return valid
 }
 
-func extractAddrs(addrs []net.Addr) (ipv4, ipv6 string) {
+func extractAddrs(addrs []net.Addr) (ipv4, ipv6 []string) {
 	for _, addr := range addrs {
 		a := addr.String()
 		switch {
 		case strings.Contains(a, ":"):
-			ipv6 = a
+			ipv6 = append(ipv6, a)
 		case strings.Contains(a, "."):
-			ipv4 = a
+			ipv4 = append(ipv4, a)
 		}
 	}
 	return
