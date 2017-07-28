@@ -88,6 +88,18 @@ $ trawl -6a wlp1s0
 fe80::defe:3c33:4335:e669/64
 ```
 
+Print a complete list of addresses for an interface
+
+```sh
+$ trawl -4c wlp1s0
+192.168.0.100/24
+10.90.0.18/16
+
+$ trawl -6c wlp1s0
+fe80::defe:3c33:4335:e669/64
+fe80::/10
+```
+
 You can also get your public IP address
 
 ```sh
