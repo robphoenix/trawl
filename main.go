@@ -32,6 +32,8 @@ var (
 	mtu       bool
 	mac       bool
 	v6addr    bool
+	v4compl   bool
+	v6compl   bool
 	usageText = `Usage: trawl [options...] <interface>
 
 A strong fishing net for dragging along the sea bottom 
@@ -56,9 +58,14 @@ Options:
   -a	             print only the IPv4 address, requires interface name
   -m	             print only the IPv4 subnet mask, requires interface name
   -s	             print only the IPv4 network (subnet), requires interface name
-  -hw                print only the MAC address (hardware address), requires interface name
+  -hw                print only the MAC address (hardware address), 
+		     requires interface name
   -u	             print only the MTU, requires interface name
   -6a                print only the IPv6 address, requires interface name
+  -4c                print the complete list of IPv4 addresses an interface has, 
+		     includes subnet mask, requires interface name
+  -6c                print the complete list of IPv6 addresses an interface has,
+		     includes subnet mask, requires interface name
 `
 )
 
@@ -86,6 +93,8 @@ func init() {
 	flag.BoolVar(&mtu, "u", false, "print only MTU, requires interface name")
 	flag.BoolVar(&mac, "hw", false, "print only MAC address (hardware address), requires interface name")
 	flag.BoolVar(&v6addr, "6a", false, "print only IPv6 address, requires interface name")
+	flag.BoolVar(&v4compl, "4c", false, "print all IPv4 address, requires interface name")
+	flag.BoolVar(&v6compl, "6c", false, "print all IPv6 address, requires interface name")
 	flag.Parse()
 }
 
@@ -114,13 +123,8 @@ func (i *Iface) String() string {
 
 // New instantiates an Iface object representing a device interface
 func New(netIface net.Interface) (*Iface, error) {
-	addrs, err := netIface.Addrs()
-	if err != nil {
-		return &Iface{}, err
-	}
 
-	// we can't rely on the order of the addresses in the addrs array
-	ipv4s, ipv6s := extractAddrs(addrs)
+	ipv4s, ipv6s := extractAddrs(&netIface)
 
 	// get IPv4 address and network
 	var v4Addr, v4Mask, v4Net string
@@ -183,6 +187,9 @@ func main() {
 			log.Fatal(err)
 			return
 		}
+
+		ipv4s, ipv6s := extractAddrs(iface)
+
 		i, err := New(*iface)
 		if err != nil {
 			log.Fatal(err)
@@ -210,6 +217,18 @@ func main() {
 		}
 		if v6addr {
 			fmt.Printf("%s\n", i.IPv6Addr)
+			return
+		}
+		if v4compl {
+			for _, v := range ipv4s {
+				fmt.Printf("%s\n", v)
+			}
+			return
+		}
+		if v6compl {
+			for _, v := range ipv6s {
+				fmt.Printf("%s\n", v)
+			}
 			return
 		}
 		if names {
@@ -276,17 +295,22 @@ func validInterfaces(loopback bool, filter string) []net.Interface {
 	return valid
 }
 
-func extractAddrs(addrs []net.Addr) (ipv4, ipv6 []string) {
+func extractAddrs(iface *net.Interface) (ipv4s, ipv6s []string) {
+	addrs, err := iface.Addrs()
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	for _, addr := range addrs {
 		a := addr.String()
 		switch {
 		case strings.Contains(a, ":"):
-			ipv6 = append(ipv6, a)
+			ipv6s = append(ipv6s, a)
 		case strings.Contains(a, "."):
-			ipv4 = append(ipv4, a)
+			ipv4s = append(ipv4s, a)
 		}
 	}
-	return
+	return ipv4s, ipv6s
 }
 
 func toDottedDec(mask net.IPMask) string {
