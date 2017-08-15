@@ -34,10 +34,13 @@ var (
 	v6addr    bool
 	v4compl   bool
 	v6compl   bool
-	usageText = `Usage: trawl [options...] <interface>
+	usageText = `
+Trawl %s
 
 A strong fishing net for dragging along the sea bottom 
 to collect IP addresses and similar flotsam & jetsam.
+                           
+trawl [options...] <interface>
 
 Options:
   -version, -v	     print version and exit
@@ -72,7 +75,7 @@ Options:
 func init() {
 
 	flag.Usage = func() {
-		fmt.Fprintf(os.Stderr, usageText)
+		fmt.Fprintf(os.Stderr, fmt.Sprintf(usageText, Version))
 	}
 
 	flag.BoolVar(&version, "version", false, "print version and exit")
