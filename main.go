@@ -16,7 +16,7 @@ import (
 
 const (
 	// Version of current release
-	Version = "v0.3.0"
+	Version = "v0.4.0"
 )
 
 var (
