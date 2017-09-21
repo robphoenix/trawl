@@ -34,6 +34,7 @@ var (
 	v6addr    bool
 	v4compl   bool
 	v6compl   bool
+	addrN     bool
 	usageText = `
 Trawl %s
 
@@ -69,6 +70,8 @@ Options:
 		     includes subnet mask, requires interface name
   -6c                print the complete list of IPv6 addresses an interface has,
 		     includes subnet mask, requires interface name
+  -c                 print the number of IPv4 & IPv6 addresses associated with an interface,
+                     requires interface name
 `
 )
 
@@ -98,11 +101,13 @@ func init() {
 	flag.BoolVar(&v6addr, "6a", false, "print only IPv6 address, requires interface name")
 	flag.BoolVar(&v4compl, "4c", false, "print all IPv4 address, requires interface name")
 	flag.BoolVar(&v6compl, "6c", false, "print all IPv6 address, requires interface name")
+	flag.BoolVar(&addrN, "c", false, "print count of all IPv4 & IPv6 addresses, requires interface name")
 	flag.Parse()
 }
 
 // Iface provides the information for a device interface
 type Iface struct {
+	AddressCount string
 	HardwareAddr string
 	IPv4Addr     string
 	IPv4Mask     string
@@ -113,21 +118,22 @@ type Iface struct {
 }
 
 func (i *Iface) String() string {
-	return fmt.Sprintf("%s\t%s\t%s\t%s\t%s\t%s\t%s\t",
-		setMissingValue(i.Name),
-		setMissingValue(i.IPv4Addr),
-		setMissingValue(i.IPv4Mask),
-		setMissingValue(i.IPv4Network),
-		setMissingValue(i.MTU),
-		setMissingValue(i.HardwareAddr),
-		setMissingValue(i.IPv6Addr),
+	return fmt.Sprintf("%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t",
+		check(i.Name),
+		check(i.IPv4Addr),
+		check(i.IPv4Mask),
+		check(i.IPv4Network),
+		check(i.MTU),
+		check(i.HardwareAddr),
+		check(i.IPv6Addr),
+		check(i.AddressCount),
 	)
 }
 
 // New instantiates an Iface object representing a device interface
 func New(netIface net.Interface) (*Iface, error) {
 
-	ipv4s, ipv6s := extractAddrs(&netIface)
+	ipv4s, ipv6s, n := expand(&netIface)
 
 	// get IPv4 address and network
 	var v4Addr, v4Mask, v4Net string
@@ -138,7 +144,7 @@ func New(netIface net.Interface) (*Iface, error) {
 		}
 		if addr != nil {
 			v4Addr = addr.String()
-			v4Mask = toDottedDec(network.Mask)
+			v4Mask = dotted(network.Mask)
 			v4Net = network.String()
 		}
 	}
@@ -148,6 +154,7 @@ func New(netIface net.Interface) (*Iface, error) {
 	}
 
 	return &Iface{
+		AddressCount: n,
 		HardwareAddr: netIface.HardwareAddr.String(),
 		IPv4Addr:     v4Addr,
 		IPv4Mask:     v4Mask,
@@ -176,7 +183,7 @@ func main() {
 	}
 
 	if ifaces {
-		fmt.Println(availableInterfaces())
+		fmt.Println(available())
 		return
 	}
 
@@ -191,7 +198,7 @@ func main() {
 			return
 		}
 
-		ipv4s, ipv6s := extractAddrs(iface)
+		ipv4s, ipv6s, _ := expand(iface)
 
 		i, err := New(*iface)
 		if err != nil {
@@ -234,23 +241,27 @@ func main() {
 			}
 			return
 		}
+		if addrN {
+			fmt.Println(i.AddressCount)
+			return
+		}
 		if names {
-			fmt.Fprintln(w, tabbedNames())
+			fmt.Fprintln(w, header())
 		}
 		fmt.Fprintln(w, i)
 		return
 	}
 
-	if v4addr || v4mask || v4net || mtu || mac || v6addr || v4compl || v6compl {
+	if v4addr || v4mask || v4net || mtu || mac || v6addr || v4compl || v6compl || addrN {
 		fmt.Fprintln(os.Stderr, errors.New("requires interface name"))
 		return
 	}
 
 	if names {
-		fmt.Fprintln(w, tabbedNames())
+		fmt.Fprintln(w, header())
 	}
 
-	for _, iface := range validInterfaces(loopback, filter) {
+	for _, iface := range usable(loopback, filter) {
 		i, err := New(iface)
 		if err != nil {
 			fmt.Fprintln(os.Stderr, err.Error())
@@ -260,7 +271,7 @@ func main() {
 	}
 }
 
-func availableInterfaces() string {
+func available() string {
 	var ifs []string
 	all, err := net.Interfaces()
 	if err != nil {
@@ -272,7 +283,7 @@ func availableInterfaces() string {
 	return strings.Join(ifs, ", ")
 }
 
-func validInterfaces(loopback bool, filter string) []net.Interface {
+func usable(loopback bool, filter string) []net.Interface {
 	var valid []net.Interface
 	all, err := net.Interfaces()
 	if err != nil {
@@ -303,7 +314,7 @@ func validInterfaces(loopback bool, filter string) []net.Interface {
 	return valid
 }
 
-func extractAddrs(iface *net.Interface) (ipv4s, ipv6s []string) {
+func expand(iface *net.Interface) (ipv4s, ipv6s []string, num string) {
 	addrs, err := iface.Addrs()
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err.Error())
@@ -318,10 +329,10 @@ func extractAddrs(iface *net.Interface) (ipv4s, ipv6s []string) {
 			ipv4s = append(ipv4s, a)
 		}
 	}
-	return ipv4s, ipv6s
+	return ipv4s, ipv6s, strconv.Itoa(len(addrs))
 }
 
-func toDottedDec(mask net.IPMask) string {
+func dotted(mask net.IPMask) string {
 	parts := make([]string, len(mask))
 	for i, part := range mask {
 		parts[i] = strconv.FormatUint(uint64(part), 10)
@@ -329,14 +340,14 @@ func toDottedDec(mask net.IPMask) string {
 	return strings.Join(parts, ".")
 }
 
-func setMissingValue(s string) string {
+func check(s string) string {
 	if s == "" {
 		return "-"
 	}
 	return s
 }
 
-func tabbedNames() string {
+func header() string {
 	ns := []string{
 		"Name",
 		"IPv4 Address",
@@ -345,6 +356,7 @@ func tabbedNames() string {
 		"MTU",
 		"MAC Address",
 		"IPv6 Address",
+		"Address Count",
 	}
 	var underlined []string
 	for _, s := range ns {
