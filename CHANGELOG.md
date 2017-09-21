@@ -1,5 +1,19 @@
 # Change Log
 
+## [v0.4.0](https://github.com/robphoenix/trawl/tree/v0.4.0) (2017-09-21)
+[Full Changelog](https://github.com/robphoenix/trawl/compare/v0.3.0...v0.4.0)
+
+**Closed issues:**
+
+- List all addresses attached to all interfaces [\#23](https://github.com/robphoenix/trawl/issues/23)
+- Improve error reporting [\#22](https://github.com/robphoenix/trawl/issues/22)
+- Feature request: report all IP addresses associated with an interface, not just one [\#20](https://github.com/robphoenix/trawl/issues/20)
+- Trawl reports the last IPv4 as the address of an interface, not the first [\#19](https://github.com/robphoenix/trawl/issues/19)
+
+**Merged pull requests:**
+
+- Report the first IP of interfaces instead of their last IP [\#21](https://github.com/robphoenix/trawl/pull/21) ([siebenmann](https://github.com/siebenmann))
+
 ## [v0.3.0](https://github.com/robphoenix/trawl/tree/v0.3.0) (2017-07-12)
 [Full Changelog](https://github.com/robphoenix/trawl/compare/v0.2.1...v0.3.0)
 
