@@ -1,9 +1,9 @@
 package main
 
 import (
+	"errors"
 	"flag"
 	"fmt"
-	"log"
 	"net"
 	"os"
 	"regexp"
@@ -134,7 +134,7 @@ func New(netIface net.Interface) (*Iface, error) {
 	if len(ipv4s) > 0 {
 		addr, network, err := net.ParseCIDR(ipv4s[0])
 		if err != nil {
-			log.Fatal(err)
+			fmt.Fprintln(os.Stderr, err.Error())
 		}
 		if addr != nil {
 			v4Addr = addr.String()
@@ -168,7 +168,7 @@ func main() {
 	if public {
 		p, err := ipify.GetIp()
 		if err != nil {
-			log.Fatal(err)
+			fmt.Fprintln(os.Stderr, err.Error())
 			return
 		}
 		fmt.Println(p)
@@ -187,7 +187,7 @@ func main() {
 	if len(args) > 0 {
 		iface, err := net.InterfaceByName(args[0])
 		if err != nil {
-			log.Fatal(err)
+			fmt.Fprintln(os.Stderr, err.Error())
 			return
 		}
 
@@ -195,7 +195,7 @@ func main() {
 
 		i, err := New(*iface)
 		if err != nil {
-			log.Fatal(err)
+			fmt.Fprintln(os.Stderr, err.Error())
 			return
 		}
 		if v4addr {
@@ -241,6 +241,11 @@ func main() {
 		return
 	}
 
+	if v4addr || v4mask || v4net || mtu || mac || v6addr || v4compl || v6compl {
+		fmt.Fprintln(os.Stderr, errors.New("requires interface name"))
+		return
+	}
+
 	if names {
 		fmt.Fprintln(w, tabbedNames())
 	}
@@ -248,7 +253,7 @@ func main() {
 	for _, iface := range validInterfaces(loopback, filter) {
 		i, err := New(iface)
 		if err != nil {
-			log.Fatal(err)
+			fmt.Fprintln(os.Stderr, err.Error())
 			return
 		}
 		fmt.Fprintln(w, i)
@@ -259,7 +264,7 @@ func availableInterfaces() string {
 	var ifs []string
 	all, err := net.Interfaces()
 	if err != nil {
-		log.Fatal(err)
+		fmt.Fprintln(os.Stderr, err.Error())
 	}
 	for _, iface := range all {
 		ifs = append(ifs, iface.Name)
@@ -271,7 +276,7 @@ func validInterfaces(loopback bool, filter string) []net.Interface {
 	var valid []net.Interface
 	all, err := net.Interfaces()
 	if err != nil {
-		log.Fatal(err)
+		fmt.Fprintln(os.Stderr, err.Error())
 	}
 	for _, iface := range all {
 		var l int
@@ -282,12 +287,12 @@ func validInterfaces(loopback bool, filter string) []net.Interface {
 		// does the interface pass the filter?
 		matched, err := regexp.MatchString(filter, iface.Name)
 		if err != nil {
-			log.Fatal(err)
+			fmt.Fprintln(os.Stderr, err.Error())
 		}
 		// does the interface have any available addresses?
 		addrs, err := iface.Addrs()
 		if err != nil {
-			log.Fatal(err)
+			fmt.Fprintln(os.Stderr, err.Error())
 		}
 		// is the interface up?
 		up := iface.Flags & net.FlagUp
@@ -301,7 +306,7 @@ func validInterfaces(loopback bool, filter string) []net.Interface {
 func extractAddrs(iface *net.Interface) (ipv4s, ipv6s []string) {
 	addrs, err := iface.Addrs()
 	if err != nil {
-		log.Fatal(err)
+		fmt.Fprintln(os.Stderr, err.Error())
 	}
 
 	for _, addr := range addrs {
