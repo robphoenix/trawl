@@ -199,38 +199,38 @@ func main() {
 			return
 		}
 		if v4addr {
-			fmt.Printf("%s\n", i.IPv4Addr)
+			fmt.Println(i.IPv4Addr)
 			return
 		}
 		if v4mask {
-			fmt.Printf("%s\n", i.IPv4Mask)
+			fmt.Println(i.IPv4Mask)
 			return
 		}
 		if v4net {
-			fmt.Printf("%s\n", i.IPv4Network)
+			fmt.Println(i.IPv4Network)
 			return
 		}
 		if mtu {
-			fmt.Printf("%s\n", i.MTU)
+			fmt.Println(i.MTU)
 			return
 		}
 		if mac {
-			fmt.Printf("%s\n", i.HardwareAddr)
+			fmt.Println(i.HardwareAddr)
 			return
 		}
 		if v6addr {
-			fmt.Printf("%s\n", i.IPv6Addr)
+			fmt.Println(i.IPv6Addr)
 			return
 		}
 		if v4compl {
 			for _, v := range ipv4s {
-				fmt.Printf("%s\n", v)
+				fmt.Println(v)
 			}
 			return
 		}
 		if v6compl {
 			for _, v := range ipv6s {
-				fmt.Printf("%s\n", v)
+				fmt.Println(v)
 			}
 			return
 		}
