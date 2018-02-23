@@ -6,7 +6,6 @@
 Prints out network interface information to the console, much like
 `ifconfig`/`ipconfig`/`ip`/`ifdata`.
 
-[![Issue Count](https://codeclimate.com/github/robphoenix/trawl/badges/issue_count.svg?style=flat-square)](https://codeclimate.com/github/robphoenix/trawl)
 [![Go Report Card](https://goreportcard.com/badge/github.com/robphoenix/trawl)](https://goreportcard.com/report/github.com/robphoenix/trawl)
 
 ```console
