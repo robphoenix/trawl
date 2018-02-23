@@ -4,121 +4,115 @@
 > and similar flotsam & jetsam.
 
 Prints out network interface information to the console, much like
-`ifconfig`/`ipconfig`/`ip`/`ifdata`
+`ifconfig`/`ipconfig`/`ip`/`ifdata`.
 
 [![Issue Count](https://codeclimate.com/github/robphoenix/trawl/badges/issue_count.svg?style=flat-square)](https://codeclimate.com/github/robphoenix/trawl)
 [![Go Report Card](https://goreportcard.com/badge/github.com/robphoenix/trawl)](https://goreportcard.com/report/github.com/robphoenix/trawl)
 
-```sh
-$ trawl
-wlp1s0   192.168.1.78  255.255.255.0    192.168.1.0/24  1500  10:02:b5:e4:de:8c  fe80::defe:3c33:4335:e669/64
-docker0  172.17.0.1    255.255.0.0      172.17.0.0/16   1500  02:42:78:9a:c1:36  -
-tun0     10.47.10.6    255.255.255.255  10.47.10.6/32   1500  -                  -
+```console
+❯ trawl
+eth1   10.62.10.6     255.255.255.252  10.62.10.4/30   1500  00:ff:28:31:d0:72  fe80::d824:2e8d:bf80:69c9/64  2
+wifi0  192.168.1.242  255.255.255.0    192.168.1.0/24  1500  10:02:b5:e4:de:8c  fe80::ed51:1db6:b32:ad90/64   2
 ```
 
 ## Flags
 
-Include column names
+Show column names.
 
-```sh
-$ trawl -n
-Name     IPv4 Address  IPv4 Mask        IPv4 Network    MTU   MAC Address        IPv6 Address
-----     ------------  ---------        ------------    ---   -----------        ------------
-wlp1s0   192.168.1.78  255.255.255.0    192.168.1.0/24  1500  10:02:b5:e4:de:8c  fe80::defe:3c33:4335:e669/64
-docker0  172.17.0.1    255.255.0.0      172.17.0.0/16   1500  02:42:78:9a:c1:36  -
-tun0     10.47.10.6    255.255.255.255  10.47.10.6/32   1500  -                  -
+```console
+❯ trawl -n                                                                                                                                                                    [1]
+Name   IPv4 Address   IPv4 Mask        IPv4 Network    MTU   MAC Address        IPv6 Address                  Address Count
+----   ------------   ---------        ------------    ---   -----------        ------------                  -------------
+eth1   10.62.10.6     255.255.255.252  10.62.10.4/30   1500  00:ff:28:31:d0:72  fe80::d824:2e8d:bf80:69c9/64  2
+wifi0  192.168.1.242  255.255.255.0    192.168.1.0/24  1500  10:02:b5:e4:de:8c  fe80::ed51:1db6:b32:ad90/64   2
 ```
 
-Filter interface names using a case insensitive regular expression
+Filter interface names using a case insensitive regular expression.
 
-```sh
-$ trawl -f w
-wlp1s0  192.168.1.78  255.255.255.0  192.168.1.0/24  1500  10:02:b5:e4:de:8c  fe80::defe:3c33:4335:e669/64
+```console
+❯ trawl -f wi
+wifi0  192.168.1.242  255.255.255.0  192.168.1.0/24  1500  10:02:b5:e4:de:8c  fe80::ed51:1db6:b32:ad90/64  2
 
-$ trawl -n -f dock
-Name     IPv4 Address  IPv4 Mask    IPv4 Network   MTU   MAC Address        IPv6 Address
-----     ------------  ---------    ------------   ---   -----------        ------------
-docker0  172.17.0.1    255.255.0.0  172.17.0.0/16  1500  02:42:78:9a:c1:36  -
+❯ trawl -n -f eth
+Name  IPv4 Address  IPv4 Mask        IPv4 Network   MTU   MAC Address        IPv6 Address                  Address Count
+----  ------------  ---------        ------------   ---   -----------        ------------                  -------------
+eth1  10.62.10.6    255.255.255.252  10.62.10.4/30  1500  00:ff:28:31:d0:72  fe80::d824:2e8d:bf80:69c9/64  2
 ```
 
-Get a list of available interfaces
+Get a list of available interfaces. Without any flags `trawl` only prints out interfaces which are _up_.
 
-```sh
-$ trawl -i
-lo, wlp1s0, docker0, tun0
+```console
+❯ trawl -i
+eth0, eth1, lo, wifi0, wifi1, eth2
 ```
 
-The loopback interface is ignored by default, but you can include it if you want
+The loopback interface is ignored by default, but you can include it if you like.
 
-```sh
-$ trawl -l
-lo       127.0.0.1     255.0.0.0        127.0.0.0/8     65536  -                  ::1/128
-wlp1s0   192.168.1.78  255.255.255.0    192.168.1.0/24  1500   10:02:b5:e4:de:8c  fe80::defe:3c33:4335:e669/64
-docker0  172.17.0.1    255.255.0.0      172.17.0.0/16   1500   02:42:78:9a:c1:36  -
-tun0     10.47.10.6    255.255.255.255  10.47.10.6/32   1500   -                  -
+```console
+❯ trawl -l
+eth1   10.62.10.6     255.255.255.252  10.62.10.4/30   1500  00:ff:28:31:d0:72  fe80::d824:2e8d:bf80:69c9/64  2
+lo     127.0.0.1      255.0.0.0        127.0.0.0/8     1500  -                  ::1/128                       2
+wifi0  192.168.1.242  255.255.255.0    192.168.1.0/24  1500  10:02:b5:e4:de:8c  fe80::ed51:1db6:b32:ad90/64   2
 ```
 
-Specify the particular interface you want to know about
+Specify the particular interface you want to know about.
 
-```sh
-$ trawl wlp1s0
-wlp1s0  192.168.1.78  255.255.255.0  192.168.1.0/24  1500  10:02:b5:e4:de:8c  fe80::defe:3c33:4335:e669/64
+```console
+❯ trawl wifi0
+wifi0  192.168.1.242  255.255.255.0  192.168.1.0/24  1500  10:02:b5:e4:de:8c  fe80::ed51:1db6:b32:ad90/64  2
 ```
 
-Get only the specific information you want, requires an interface name be provided
+Show only the specific information you want, requires an interface name be provided.
 
-```sh
+```console
 # IPv4 Address
-$ trawl -a wlp1s0
-192.168.1.78
+❯ trawl -a wifi0
+192.168.1.242
 # IPv4 Subnet Mask
-$ trawl -m wlp1s0
+❯ trawl -m wifi0
 255.255.255.0
 # IPv4 Network
-$ trawl -s wlp1s0
+❯ trawl -s wifi0
 192.168.1.0/24
 # IPv4 MTU
-$ trawl -u wlp1s0
+❯ trawl -u wifi0
 1500
 # MAC Address
-$ trawl -hw wlp1s0
+❯ trawl -hw wifi0
 10:02:b5:e4:de:8c
 # IPv6 Address & Mask
-$ trawl -6a wlp1s0
-fe80::defe:3c33:4335:e669/64
+❯ trawl -6a wifi0
+fe80::ed51:1db6:b32:ad90/64
 ```
 
-Print a complete list of addresses for an interface
+Print a complete list of addresses for an interface.
 
-```sh
-$ trawl -4c wlp1s0
+```console
+❯ trawl -4c wifi0
 192.168.0.100/24
 10.90.0.18/16
 
-$ trawl -6c wlp1s0
+❯ trawl -6c wifi0
 fe80::defe:3c33:4335:e669/64
 fe80::/10
 ```
 
-You can also get your public IP address
+You can also get your public IP address.
 
-```sh
-$ trawl -p
+```console
+❯ trawl -p
 104.238.169.73
 ```
 
-All the same functionality is available in Windows
+All the same functionality is available in Windows.
 
 ```cmd
-% trawl -n
-Name                               IPv4 Address    IPv4 Mask        IPv4 Network     MTU   MAC Address              IPv6 Address
-----                               ------------    ---------        ------------     ---   -----------              ------------
-Local Area Connection 3            10.58.10.6      255.255.255.252  10.58.10.4/30    1500  00:ff:49:4c:23:6f        fe80::9cc6:61a2:9a20:2def/64
-Local Area Connection 4            169.254.17.182  255.255.0.0      169.254.0.0/16   1500  02:00:4c:4f:4f:50        fe80::6cd7:885:5ae5:11b6/64
-Wireless Network Connection        10.26.101.209   255.255.255.0    10.26.101.0/24   1500  24:77:03:c1:7e:2c        fe80::48e8:96c3:7457:8a3d/64
-VirtualBox Host-Only Network       192.168.56.1    255.255.255.0    192.168.56.0/24  1500  0a:00:27:00:00:1a        fe80::31ac:de12:1d27:fbc9/64
-VirtualBox Host-Only Network #2    10.0.0.1        255.255.0.0      10.0.0.0/16      1500  0a:00:27:00:00:1c        fe80::701e:c603:1aee:597e/64
-Teredo Tunneling Pseudo-Interface  -               -                -                1280  00:00:00:00:00:00:00:e0  fe80::3810:1607:f5c5:f5f9/64
+C:\Users\robphoenix>trawl -l -n
+Name                         IPv4 Address   IPv4 Mask        IPv4 Network    MTU   MAC Address        IPv6 Address                  Address Count
+----                         ------------   ---------        ------------    ---   -----------        ------------                  -------------
+Ethernet                     10.62.10.6     255.255.255.252  10.62.10.4/30   1500  00:ff:28:31:d0:72  fe80::d824:2e8d:bf80:69c9/64  2
+Wi-Fi                        192.168.1.242  255.255.255.0    192.168.1.0/24  1500  10:02:b5:e4:de:8c  fe80::ed51:1db6:b32:ad90/64   2
+Loopback Pseudo-Interface 1  127.0.0.1      255.0.0.0        127.0.0.0/8     -1    -                  ::1/128                       2
 ```
 
 ## Installation
@@ -131,7 +125,7 @@ rename it as `trawl`, and put it in your path ([howto ubuntu](https://askubuntu.
 
 If you do have Go installed...
 
-```
+```console
 go get -u github.com/robphoenix/trawl
 ```
 
