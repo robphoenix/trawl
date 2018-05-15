@@ -14,7 +14,7 @@ import (
 	"github.com/rdegges/go-ipify"
 )
 
-const (
+var (
 	// Version of current release
 	Version = "v0.4.0"
 )
