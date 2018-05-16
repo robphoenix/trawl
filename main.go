@@ -16,7 +16,7 @@ import (
 
 var (
 	// Version of current release
-	Version = "v0.4.0"
+	Version = "manual"
 )
 
 var (
