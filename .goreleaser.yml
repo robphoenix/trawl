@@ -13,7 +13,7 @@ archive:
   format: tar.gz
 snapshot: 
   name_template: "{{.Commit}}"
-fpm:
+nfpm:
   vendor: Rob Phoenix
   homepage: https://github.com/robphoenix/trawl
   maintainer: Rob Phoenix
