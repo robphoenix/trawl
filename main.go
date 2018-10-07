@@ -118,7 +118,7 @@ type Iface struct {
 }
 
 func (i *Iface) String() string {
-	return fmt.Sprintf("%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t",
+	return fmt.Sprintf("%s\t%s\t%s\t%s\t%s\t%s\t%s\t",
 		check(i.Name),
 		check(i.IPv4Addr),
 		check(i.IPv4Mask),
@@ -126,7 +126,6 @@ func (i *Iface) String() string {
 		check(i.MTU),
 		check(i.HardwareAddr),
 		check(i.IPv6Addr),
-		check(i.AddressCount),
 	)
 }
 
@@ -356,7 +355,6 @@ func header() string {
 		"MTU",
 		"MAC Address",
 		"IPv6 Address",
-		"Address Count",
 	}
 	var underlined []string
 	for _, s := range ns {
