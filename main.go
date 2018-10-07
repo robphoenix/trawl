@@ -14,9 +14,9 @@ import (
 	"github.com/rdegges/go-ipify"
 )
 
-var (
+const (
 	// Version of current release
-	Version = "manual"
+	Version = "v0.4.0"
 )
 
 var (
@@ -38,9 +38,9 @@ var (
 	usageText = `
 Trawl %s
 
-A strong fishing net for dragging along the sea bottom 
+A strong fishing net for dragging along the sea bottom
 to collect IP addresses and similar flotsam & jetsam.
-                           
+
 trawl [options...] <interface>
 
 Options:
@@ -62,11 +62,11 @@ Options:
   -a	             print only the IPv4 address, requires interface name
   -m	             print only the IPv4 subnet mask, requires interface name
   -s	             print only the IPv4 network (subnet), requires interface name
-  -hw                print only the MAC address (hardware address), 
+  -hw                print only the MAC address (hardware address),
 		     requires interface name
   -u	             print only the MTU, requires interface name
   -6a                print only the IPv6 address, requires interface name
-  -4c                print the complete list of IPv4 addresses an interface has, 
+  -4c                print the complete list of IPv4 addresses an interface has,
 		     includes subnet mask, requires interface name
   -6c                print the complete list of IPv6 addresses an interface has,
 		     includes subnet mask, requires interface name
