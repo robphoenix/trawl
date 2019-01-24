@@ -19,7 +19,7 @@ wifi0  192.168.1.242  255.255.255.0    192.168.1.0/24  1500  10:02:b5:e4:de:8c  
 Show column names.
 
 ```console
-❯ trawl -n                                                                                                                                                                    [1]
+❯ trawl -n
 Name   IPv4 Address   IPv4 Mask        IPv4 Network    MTU   MAC Address        IPv6 Address                  Address Count
 ----   ------------   ---------        ------------    ---   -----------        ------------                  -------------
 eth1   10.62.10.6     255.255.255.252  10.62.10.4/30   1500  00:ff:28:31:d0:72  fe80::d824:2e8d:bf80:69c9/64  2
